@@ -7,6 +7,16 @@
 
 Currently, the project has no automated tests. This makes it harder to catch bugs, verify key features like track creation or deletion, and safely refactor code.
 
+## Rationale
+
+- **Ensure Stability**: Automated tests help detect most errors even during the development stage.
+- **Increase Confidence for Refactoring**: A wide set of tests makes it easier to check application for bugs after code changes
+
+### Alternatives Considered
+
+- **Manual QA Only**: takes significantly more time than automated testing, inaccuracies are possible in the testing process.
+- **Relying on Code Reviews Alone**: takes a lot of time and may be less effective than classic automated testing.
+
 ## Decision
 
 Unit and integration tests will be gradually introduced for important features, for instance CRUD operations on tracks, form validation, filters.
