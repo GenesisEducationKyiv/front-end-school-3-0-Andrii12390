@@ -48,7 +48,8 @@ function NotFound() {
 
       <footer className='p-6 border-t border-border text-center'>
         <p className='text-muted'>
-          Lost in the music? Don't worry, every good song has its way back home.
+          Lost in the music? Don&apos;t worry, every good song has its way back
+          home.
         </p>
       </footer>
     </div>

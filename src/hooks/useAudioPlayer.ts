@@ -56,7 +56,7 @@ export function useAudioPlayer(track: TTrack | null) {
     } else {
       setAudioState(initialState);
     }
-  }, [track]);
+  }, [track, reduxIsPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -70,7 +70,7 @@ export function useAudioPlayer(track: TTrack | null) {
           audio.pause();
         }
         setAudioState((prev) => ({ ...prev, isPlaying: reduxIsPlaying }));
-      } catch (err) {
+      } catch {
         customToast.error('Error controlling audio playback');
       }
     };

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { TTrack } from '@/types';
 import {
@@ -29,17 +29,16 @@ interface ITrackItemProps {
 function TrackItem({ track, handleEdit }: ITrackItemProps) {
   const dispatch = useAppDispatch();
   const { selectedIds, activeTrack } = useAppSelector(selectTracks);
-  const isSelected = selectedIds.includes(track.id);
-
   const [isTrackDeleteOpen, setIsTrackDeleteOpen] = useState(false);
   const [isFileDeleteOpen, setIsFileDeleteOpen] = useState(false);
+
   const [duration, setDuration] = useState<number | null>(null);
 
   const handleRemoveTrack = async () => {
     try {
       await dispatch(deleteTrack(track.id));
       customToast.success('Track successfully removed!');
-    } catch (e) {
+    } catch {
       customToast.error('Error deleting track!');
     } finally {
       setIsTrackDeleteOpen(false);
@@ -64,7 +63,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
     try {
       await dispatch(deleteTrackFile(track.id));
       customToast.success('File successfully removed!');
-    } catch (e) {
+    } catch {
       customToast.error('Error removing file!');
     } finally {
       setIsFileDeleteOpen(false);
@@ -91,7 +90,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
     try {
       await dispatch(uploadTrackFile({ id: track.id, file }));
       customToast.success('File successfully uploaded!');
-    } catch (e) {
+    } catch {
       customToast.error('Error uploading file!');
     }
   };
@@ -139,7 +138,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
           <span className='text-sm'>{formatTime(duration!)}</span>
           <TrackActions
             track={track}
-            isChecked={isSelected}
+            isChecked={selectedIds.includes(track.id)}
             onPlay={handlePlay}
             onEdit={() => handleEdit(track)}
             onFileUpload={validateAndUploadFile}

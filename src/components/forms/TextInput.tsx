@@ -6,20 +6,21 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Control, FieldValues, Path } from 'react-hook-form';
 
-interface ITextInputFieldProps {
-  name: string;
+interface ITextInputFieldProps<T extends FieldValues> {
+  name: Path<T>;
   label: string;
   testId?: string;
-  control: any;
+  control: Control<T>;
 }
 
-function TextInputField({
+function TextInputField<T extends FieldValues>({
   name,
   label,
   testId,
   control,
-}: ITextInputFieldProps) {
+}: ITextInputFieldProps<T>) {
   return (
     <FormField
       control={control}
