@@ -3,7 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CreateTrackForm from '../forms/CreateTrackForm';
-import { selectFilters, TField, TOrder } from '@/features/filters/filtersSlice';
+import {
+  selectFilters,
+  type TField,
+  type TOrder,
+} from '@/features/filters/filtersSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { bulkDeleteTracks, fetchTracks } from '@/features/tracks/trackThunks';
 import { fetchGenres } from '@/features/genres/genresThunk';

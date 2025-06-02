@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { fetchGenres } from '@/features/genres/genresThunk';
 import { createTrack } from '@/features/tracks/trackThunks';
 import { Button } from '@/components/ui/button';
-import { trackFormSchema, TTrackForm } from '@/lib/schemas';
+import { trackFormSchema, type TTrackForm } from '@/lib/schemas';
 import TextInputField from './TextInput';
 import GenreSelector from './GenreSelector';
 import { customToast } from '../ui/toasts';

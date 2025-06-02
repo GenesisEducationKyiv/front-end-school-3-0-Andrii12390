@@ -16,7 +16,7 @@ import {
 } from '../ui/sheet';
 import { useAppSelector } from '@/app/hooks';
 import { selectGenres } from '@/features/genres/genresSlice';
-import { TField, TOrder } from '@/features/filters/filtersSlice';
+import type { TField, TOrder } from '@/features/filters/filtersSlice';
 
 interface ITrackFilters {
   isSheetOpen: boolean;

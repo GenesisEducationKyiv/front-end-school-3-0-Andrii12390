@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Upload, File, Trash2 } from 'lucide-react';
-import { TTrack } from '@/types';
+import { type TTrack } from '@/types';
 
 interface TrackFileModalProps {
   isOpen: boolean;

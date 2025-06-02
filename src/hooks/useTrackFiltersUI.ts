@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { TField, TOrder, TSort } from '@/features/filters/filtersSlice';
+import type { TField, TOrder, TSort } from '@/features/filters/filtersSlice';
 import { useAppDispatch } from '@/app/hooks';
 import {
   setSearch as setGlobalSearch,

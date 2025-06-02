@@ -1,5 +1,5 @@
 import { Pause, Play } from 'lucide-react';
-import { TTrack } from '@/types';
+import { type TTrack } from '@/types';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { Button } from '../ui/button';
 import { API_URL } from '@/lib/config';

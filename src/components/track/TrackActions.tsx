@@ -9,7 +9,7 @@ import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
 import { useSelector } from 'react-redux';
 import { selectTracks } from '@/features/tracks/tracksSlice';
-import { TTrack } from '@/types';
+import { type TTrack } from '@/types';
 import { useState } from 'react';
 import TrackFileDialog from './TrackFileDialog';
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { TTrack } from '@/types';
+import { type TTrack } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
   playNextTrack,

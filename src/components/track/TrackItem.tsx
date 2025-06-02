@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { TTrack } from '@/types';
+import { type TTrack } from '@/types';
 import {
   deleteTrack,
   uploadTrackFile,

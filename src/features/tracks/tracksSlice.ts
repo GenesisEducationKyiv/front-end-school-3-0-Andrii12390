@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { TTrack } from '@/types';
+import { type TTrack } from '@/types';
 import {
   createTrack,
   fetchTracks,
@@ -10,7 +10,7 @@ import {
   setActiveTrack,
   bulkDeleteTracks,
 } from './trackThunks';
-import { RootState } from '@/app/store';
+import { type RootState } from '@/app/store';
 
 export interface IMetaData {
   total: number;

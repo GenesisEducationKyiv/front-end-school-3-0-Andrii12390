@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import type { TTrack } from '@/types';
-import { RootState } from '@/app/store';
-import { IMetaData } from './tracksSlice';
+import { type TTrack } from '@/types';
+import { type RootState } from '@/app/store';
+import { type IMetaData } from './tracksSlice';
 import { api } from '@/lib/api';
 
 export const createTrack = createAsyncThunk(
