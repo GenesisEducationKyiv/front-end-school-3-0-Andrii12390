@@ -7,27 +7,68 @@
 
 In the current implementation of the music player project, track modifications such as creating a new track, editing track metadata (e.g., title, artist), or deleting a track rely entirely on the response from the backend before updating the UI.
 
-To improve perceived performance and system responsiveness, **optimistic updates** can be implemented - user interface changes are applied immediately, and in the event of a server error, they are rolled back
+To improve perceived performance and system responsiveness, **optimistic updates** can be implemented – user interface changes are applied immediately, and in the event of a server error, they are rolled back.
 
 ## Rationale
 
-- **Improved Performance for a user**: applying changes immidiately gives users instant feedback and makes the app feel more responsive.
-- **Enhanced UX**: users can continue interacting with tracks without waiting for server confirmation.
-- **Simple Rollback Logic**: keeping the previous state in memory makes it easy to roll back changes in case of an error.
+- **Improved Performance for users**: Applying changes immediately gives users instant feedback and makes the app feel more responsive.
+- **Enhanced UX**: Users can continue interacting with tracks without waiting for server confirmation.
+- **Simple Rollback Logic**: Keeping the previous state in memory (or in the Redux store) makes it easy to roll back changes in case of an error.
+- **Centralized State Management**: Because the app already uses Redux to store and manage tracks, using Redux for optimistic updates is a logical solution— all actions occur in a single slice without requiring additional local state.
 
 ### Alternatives Considered
 
-- **Pessimistic Updates**: displaying loaders after each server request can be annoying to the user
+1. **Pessimistic Updates**  
+   Displaying loaders after each server request can be annoying for the user.
+
+2. **Hook `useOptimistic`**
+
+   React has a built-in hook for optimistic UI updates.
+
+   - **Positive**:
+     - Simple implementation.
+     - Doesn't require Redux at all, because mutations live in local state.
+     - Provides a pending status via React’s transition mechanism.
+   - **Negative**:
+     - Works only for local component state; to synchronize multiple components, additional logic is required.
+     - The app already uses Redux to store tracks; combining local `useOptimistic` with the Redux store can add lots of complexity and extra code.
+
+3. **RTK Query with Optimistic Updates**  
+   RTK Query provides a built-in way (`onQueryStarted`) to mutate data optimistically and roll back if the request fails.
+   - **Positive**:
+     - Easily implemented by creating an optimistic update in `onQueryStarted` with rollback logic in case of an error.
+     - Requires less custom code compared to manually writing thunks and rollback actions.
+   - **Negative**:
+     - Requires migrating existing thunks and slices to RTK Query endpoints.
 
 ## Decision
 
-Optimistic updates will be implemented in the following places:
+We will implement optimistic updates for track CRUD operations using **Redux actions and thunks**. In each thunk:
 
-- **Track Creation**: Immediately append a new track to the UI list using a temporary ID. When the real ID is received from the server, replace the placeholder.
-- **Track Editing**: Changes (e.g., to title or artist) will reflect immediately in the UI. If the server update fails, revert to the previous state.
-- **Track Deletion**: Remove the track from the visible list instantly. If the deletion fails, restore the item and notify the user.
+1. Dispatch an optimistic action to update the Redux store immediately.
+2. Perform the API call.
+3. On success, dispatch a commit action or rely on `createAsyncThunk.fulfilled` (or a custom action) to replace the temporary data.
+4. On failure, dispatch a rollback action (`createAsyncThunk.rejected` or a custom action) to revert the store to its previous state.
 
-Optimistic updates will be handled via Redux actions and thunks. In each thunk, local state changes will be dispatched before the API call, and a rollback action will be dispatched on error
+Specifically:
+
+- **Track Creation**
+
+  1. Generate a temporary ID, then dispatch `addTrackOptimistic({ id: tempId, ...other })`.
+  2. Call the `addTrack` thunk.
+  3. In `addTrack.fulfilled`, replace the temporary ID with the real one from the server.
+  4. In `addTrack.rejected`, remove the temporary item and show an error notification.
+
+- **Track Editing**
+
+  1. Dispatch `editTrackOptimistic({ id, changes })`.
+  2. Call the `editTrack` thunk.
+  3. In `editTrack.rejected`, dispatch `editTrackRollback({ id, previousData })`.
+
+- **Track Deletion**
+  1. Dispatch `deleteTrackOptimistic({ id })`.
+  2. Call the `deleteTrack` thunk.
+  3. In `deleteTrack.rejected`, dispatch `deleteTrackRollback({ id, previousItem })`.
 
 ## Consequences
 
