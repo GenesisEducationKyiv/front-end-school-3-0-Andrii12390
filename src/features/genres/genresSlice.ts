@@ -1,11 +1,12 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { fetchGenres } from './genresThunk';
 import { type RootState } from '@/app/store';
+import { type ApiError } from '@/types';
 
 interface GenresState {
   genres: string[];
   loading: boolean;
-  error: string | null;
+  error: ApiError | null;
 }
 
 const initialState: GenresState = {
@@ -30,9 +31,14 @@ const genresSlice = createSlice({
           state.loading = false;
         }
       )
-      .addCase(fetchGenres.rejected, (state) => {
+      .addCase(fetchGenres.rejected, (state, action) => {
         state.loading = false;
-        state.error = 'Error fetching genres';
+
+        if (action.payload) {
+          state.error = action.payload;
+        } else {
+          state.error = { message: action.error.message ?? 'Unknown error' };
+        }
       });
   },
 });

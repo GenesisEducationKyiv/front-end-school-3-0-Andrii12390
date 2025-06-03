@@ -34,15 +34,21 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
 
   const [duration, setDuration] = useState<number | null>(null);
 
-  const handleRemoveTrack = async () => {
-    try {
-      await dispatch(deleteTrack(track.id));
-      customToast.success('Track successfully removed!');
-    } catch {
-      customToast.error('Error deleting track!');
-    } finally {
-      setIsTrackDeleteOpen(false);
-    }
+  const handleRemoveTrack = () => {
+    dispatch(deleteTrack(track.id))
+      .then((result) => {
+        if (deleteTrack.rejected.match(result)) {
+          const err = result.payload ?? {
+            message: 'Unknown error',
+          };
+          customToast.error(err.message);
+        } else {
+          customToast.success('Track successfully removed!');
+        }
+      })
+      .finally(() => {
+        setIsTrackDeleteOpen(false);
+      });
   };
 
   useEffect(() => {
@@ -59,15 +65,21 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
     }
   }, [track.audioFile]);
 
-  const handleRemoveFile = async () => {
-    try {
-      await dispatch(deleteTrackFile(track.id));
-      customToast.success('File successfully removed!');
-    } catch {
-      customToast.error('Error removing file!');
-    } finally {
-      setIsFileDeleteOpen(false);
-    }
+  const handleRemoveFile = () => {
+    dispatch(deleteTrackFile(track.id))
+      .then((result) => {
+        if (deleteTrackFile.rejected.match(result)) {
+          const err = result.payload ?? {
+            message: 'Unknown error',
+          };
+          customToast.error(err.message);
+        } else {
+          customToast.success('File successfully removed!');
+        }
+      })
+      .finally(() => {
+        setIsFileDeleteOpen(false);
+      });
   };
 
   const validateAndUploadFile = async (file: File) => {

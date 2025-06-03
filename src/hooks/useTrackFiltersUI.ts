@@ -45,6 +45,7 @@ export function useTrackFiltersUI(initial: IUseTrackFiltersUIProps) {
         page: 1,
       })
     );
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [debouncedSearch]);
 
   const applyFilters = () => {

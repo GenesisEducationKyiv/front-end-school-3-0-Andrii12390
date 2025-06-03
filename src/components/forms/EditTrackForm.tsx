@@ -13,7 +13,7 @@ import GenreSelector from './GenreSelector';
 import FormDialog from './FormDialog';
 
 import { trackFormSchema, type TTrackForm } from '@/lib/schemas';
-import { type TTrack } from '@/types';
+import type { ApiError, TTrack } from '@/types';
 import { customToast } from '../ui/toasts';
 import { selectGenres } from '@/features/genres/genresSlice';
 import { selectTracks } from '@/features/tracks/tracksSlice';
@@ -31,7 +31,11 @@ function EditTrackForm({ track, isOpenModal, setIsOpenModal }: ITrackEditor) {
   const { isLoading } = useAppSelector(selectTracks);
 
   useEffect(() => {
-    dispatch(fetchGenres());
+    dispatch(fetchGenres())
+      .unwrap()
+      .catch((err: ApiError) => {
+        customToast.error(`Fetch failed: ${err.message}`);
+      });
   }, [dispatch]);
 
   const form = useForm<TTrackForm>({
@@ -45,14 +49,16 @@ function EditTrackForm({ track, isOpenModal, setIsOpenModal }: ITrackEditor) {
     },
   });
 
-  const onSubmit = async (values: TTrackForm) => {
-    const result = await dispatch(editTrack({ ...values, id: track.id }));
-
-    if (editTrack.rejected.match(result)) {
-      return customToast.error('Failed to update track. Please try again');
-    }
-
-    customToast.success('Track updated successfully');
+  const onSubmit = (values: TTrackForm) => {
+    dispatch(editTrack({ ...values, id: track.id })).then((result) => {
+      if (editTrack.rejected.match(result)) {
+        const err = result.payload ?? {
+          message: 'Unknown error',
+        };
+        return customToast.error(err.message);
+      }
+      customToast.success('Track updated successfully');
+    });
   };
 
   return (

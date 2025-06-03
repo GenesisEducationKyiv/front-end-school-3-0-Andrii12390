@@ -5,6 +5,7 @@ import { fetchTracks } from '@/features/tracks/trackThunks';
 import { twMerge } from 'tailwind-merge';
 import { selectTracks } from '@/features/tracks/tracksSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { customToast } from '../ui/toasts';
 
 function Pagination() {
   const dispatch = useAppDispatch();
@@ -24,7 +25,12 @@ function Pagination() {
     if (newPage >= 1 && newPage <= (meta.totalPages || 1) && !isLoading) {
       dispatch(setPage(newPage));
       updateUrlParams(newPage);
-      dispatch(fetchTracks());
+      dispatch(fetchTracks()).then((result) => {
+        if (fetchTracks.rejected.match(result)) {
+          const err = result.payload ?? { message: 'Failed to fetch tracks' };
+          customToast.error(err.message);
+        }
+      });
     }
   };
 
