@@ -38,15 +38,22 @@ export function useTrackFiltersUI(initial: IUseTrackFiltersUIProps) {
   const debouncedSearch = useDebounce(search, 500);
 
   useEffect(() => {
-    dispatch(setGlobalSearch(debouncedSearch));
-    setSearchParams(
-      updateUrlParams(searchParams, {
-        search: debouncedSearch || null,
-        page: 1,
-      })
-    );
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [debouncedSearch]);
+    const currentSearch = searchParams.get('search') ?? '';
+
+    if (debouncedSearch !== currentSearch) {
+      dispatch(setGlobalSearch(debouncedSearch));
+
+      const newParams = new URLSearchParams(searchParams);
+      if (debouncedSearch) {
+        newParams.set('search', debouncedSearch);
+      } else {
+        newParams.delete('search');
+      }
+      newParams.set('page', '1');
+
+      setSearchParams(newParams);
+    }
+  }, [debouncedSearch, searchParams, dispatch, setSearchParams]);
 
   const applyFilters = () => {
     dispatch(setGlobalSort(sort));

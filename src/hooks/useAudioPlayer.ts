@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { type TTrack } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
   playNextTrack,
   selectTracks,
   togglePlayPause,
 } from '@/features/tracks/tracksSlice';
-import { customToast } from '@/components/ui/toasts';
+import { type TTrack } from '@/lib/schemas';
 
 interface IAudioState {
   isPlaying: boolean;
@@ -63,16 +62,12 @@ export function useAudioPlayer(track: TTrack | null) {
     if (!audio || !track?.audioFile) return;
 
     const handlePlayPause = async () => {
-      try {
-        if (reduxIsPlaying && audio.paused) {
-          await audio.play();
-        } else if (!reduxIsPlaying && !audio.paused) {
-          audio.pause();
-        }
-        setAudioState((prev) => ({ ...prev, isPlaying: reduxIsPlaying }));
-      } catch {
-        customToast.error('Error controlling audio playback');
+      if (reduxIsPlaying && audio.paused) {
+        await audio.play();
+      } else if (!reduxIsPlaying && !audio.paused) {
+        audio.pause();
       }
+      setAudioState((prev) => ({ ...prev, isPlaying: reduxIsPlaying }));
     };
 
     handlePlayPause();

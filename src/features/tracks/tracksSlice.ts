@@ -3,7 +3,7 @@ import {
   PayloadAction,
   isRejectedWithValue,
 } from '@reduxjs/toolkit';
-import type { ApiError, TTrack } from '@/types';
+import type { ApiError } from '@/types';
 import {
   createTrack,
   fetchTracks,
@@ -16,20 +16,14 @@ import {
 } from './trackThunks';
 import { type RootState } from '@/app/store';
 import { isApiError } from '@/lib/api';
-
-export interface IMetaData {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+import type { TTrack, TMetaData } from '@/lib/schemas';
 
 export interface ITracksState {
   tracks: TTrack[];
   isLoading: boolean;
   error: ApiError | null;
   selectedIds: string[];
-  meta: IMetaData;
+  meta: TMetaData;
   activeTrack: TTrack | null;
   isPlaying: boolean;
 }
@@ -96,7 +90,7 @@ const tracksSlice = createSlice({
       .addCase(fetchTracks.pending, handlePending)
       .addCase(
         fetchTracks.fulfilled,
-        (state, action: PayloadAction<{ data: TTrack[]; meta: IMetaData }>) => {
+        (state, action: PayloadAction<{ data: TTrack[]; meta: TMetaData }>) => {
           state.tracks = action.payload.data;
           state.meta = action.payload.meta;
           state.isLoading = false;

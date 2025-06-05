@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { fetchGenres } from '@/features/genres/genresThunk';
 import { createTrack } from '@/features/tracks/trackThunks';
 import { Button } from '@/components/ui/button';
-import { trackFormSchema, type TTrackForm } from '@/lib/schemas';
+import { TrackFormSchema, type TTrackForm } from '@/lib/schemas';
 import TextInputField from './TextInput';
 import GenreSelector from './GenreSelector';
 import { customToast } from '../ui/toasts';
@@ -32,7 +32,7 @@ function CreateTrackForm() {
   }, [dispatch]);
 
   const form = useForm<TTrackForm>({
-    resolver: zodResolver(trackFormSchema),
+    resolver: zodResolver(TrackFormSchema),
     defaultValues: {
       title: '',
       artist: '',

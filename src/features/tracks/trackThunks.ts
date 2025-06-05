@@ -1,28 +1,33 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import type { TTrack } from '@/types';
 import type { RootState } from '@/app/store';
-import type { IMetaData } from './tracksSlice';
 import { api, safeApi } from '@/lib/api';
 import type { ApiError } from '@/types';
+import {
+  type TMetaData,
+  type TTrack,
+  TrackListResponseSchema,
+  TrackResponseSchema,
+} from '@/lib/schemas';
 
 export const createTrack = createAsyncThunk<
   TTrack,
-  Omit<TTrack, 'id'>,
+  Omit<TTrack, 'id' | 'slug'>,
   { rejectValue: ApiError }
 >('tracks/create', async (data, { rejectWithValue }) => {
-  const result = await safeApi<TTrack>(api.post<TTrack>('/api/tracks', data));
+  const result = await safeApi<TTrack>(
+    api.post<TTrack>('/api/tracks', data),
+    TrackResponseSchema
+  );
 
   if (result.isErr()) {
     return rejectWithValue(result.error);
   }
 
-  const { data: track } = result.value;
-
-  return track;
+  return result.value.data;
 });
 
 export const fetchTracks = createAsyncThunk<
-  { data: TTrack[]; meta: IMetaData },
+  { data: TTrack[]; meta: TMetaData },
   void,
   { state: RootState; rejectValue: ApiError }
 >('tracks/fetchAll', async (_, { getState, rejectWithValue }) => {
@@ -36,8 +41,9 @@ export const fetchTracks = createAsyncThunk<
   if (filters.search.trim()) params.search = filters.search.trim();
   if (filters.genre.trim()) params.genre = filters.genre.trim();
 
-  const result = await safeApi<{ data: TTrack[]; meta: IMetaData }>(
-    api.get<{ data: TTrack[]; meta: IMetaData }>('/api/tracks', { params })
+  const result = await safeApi<{ data: TTrack[]; meta: TMetaData }>(
+    api.get<{ data: TTrack[]; meta: TMetaData }>('/api/tracks', { params }),
+    TrackListResponseSchema
   );
 
   if (result.isErr()) {
@@ -65,20 +71,19 @@ export const deleteTrack = createAsyncThunk<
 
 export const editTrack = createAsyncThunk<
   TTrack,
-  TTrack,
+  Omit<TTrack, 'slug'>,
   { rejectValue: ApiError }
 >('tracks/edit', async (data, { rejectWithValue }) => {
   const result = await safeApi<TTrack>(
-    api.put<TTrack>(`/api/tracks/${data.id}`, data)
+    api.put<TTrack>(`/api/tracks/${data.id}`, data),
+    TrackResponseSchema
   );
 
   if (result.isErr()) {
     return rejectWithValue(result.error);
   }
 
-  const { data: updated } = result.value;
-
-  return updated;
+  return result.value.data;
 });
 
 export const uploadTrackFile = createAsyncThunk<
@@ -99,9 +104,7 @@ export const uploadTrackFile = createAsyncThunk<
     return rejectWithValue(result.error);
   }
 
-  const { data: updated } = result.value;
-
-  return updated;
+  return result.value.data;
 });
 
 export const deleteTrackFile = createAsyncThunk<
@@ -110,16 +113,15 @@ export const deleteTrackFile = createAsyncThunk<
   { rejectValue: ApiError }
 >('tracks/deleteFile', async (id, { rejectWithValue }) => {
   const result = await safeApi<TTrack>(
-    api.delete<TTrack>(`/api/tracks/${id}/file`)
+    api.delete<TTrack>(`/api/tracks/${id}/file`),
+    TrackResponseSchema
   );
 
   if (result.isErr()) {
     return rejectWithValue(result.error);
   }
 
-  const { data: updated } = result.value;
-
-  return updated;
+  return result.value.data;
 });
 
 export const setActiveTrack = createAsyncThunk<TTrack, TTrack>(

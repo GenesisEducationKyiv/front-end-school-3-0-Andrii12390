@@ -1,6 +1,6 @@
-import z from 'zod';
+import { z } from 'zod';
 
-export const trackFormSchema = z.object({
+export const TrackFormSchema = z.object({
   title: z
     .string()
     .min(1, 'Title is required')
@@ -21,5 +21,34 @@ export const trackFormSchema = z.object({
   genres: z.array(z.string()).min(1, 'Select at least one genre'),
 });
 
+export const genresResponseSchema = z.array(z.string());
 
-export type TTrackForm = z.infer<typeof trackFormSchema>;
+export const TrackResponseSchema = z.object({
+  id: z.string().nonempty(),
+  title: z.string().nonempty(),
+  artist: z.string().nonempty(),
+  album: z.string().optional(),
+  genres: z.array(z.string()),
+  slug: z.string().nonempty(),
+  coverImage: z.string().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+
+export const TrackMetadataResponse = z.object({
+  total: z.number().nonnegative(),
+  page: z.number().nonnegative(),
+  limit: z.number().nonnegative(),
+  totalPages: z.number().nonnegative(),
+});
+
+export const TrackListResponseSchema = z.object({
+  data: z.array(TrackResponseSchema),
+  meta: TrackMetadataResponse,
+});
+
+export type TTrack = z.infer<typeof TrackResponseSchema> & {
+  audioFile?: string;
+};
+export type TMetaData = z.infer<typeof TrackMetadataResponse>;
+export type TTrackForm = z.infer<typeof TrackFormSchema>;

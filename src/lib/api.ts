@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { ZodSchema } from 'zod';
 import { API_URL } from './config';
 import type { ApiSuccess, ApiError } from '@/types';
-import { Result, fromPromise } from 'neverthrow';
+import { Result, fromPromise, ok, err } from 'neverthrow';
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -10,34 +11,50 @@ export const api = axios.create({
   },
 });
 
+const handleApiError = (error: unknown): ApiError => {
+  if (error instanceof AxiosError) {
+    const { response } = error;
+    return {
+      message:
+        response?.data &&
+        typeof response.data === 'object' &&
+        'error' in response.data
+          ? String(response.data.error)
+          : error.message,
+      status: response?.status,
+    };
+  }
+  return {
+    message: error instanceof Error ? error.message : String(error),
+  };
+};
+
+const parseResponseData = <T>(
+  data: T,
+  schema?: ZodSchema<T>
+): Result<T, ApiError> => {
+  if (!schema) {
+    return ok(data as T);
+  }
+  const parsed = schema.safeParse(data);
+  if (!parsed.success) {
+    return err({
+      message: 'Invalid Response data',
+    });
+  }
+  return ok(parsed.data);
+};
+
 export async function safeApi<T>(
-  promise: Promise<AxiosResponse<T>>
+  promise: Promise<AxiosResponse<T>>,
+  schema?: ZodSchema<T>
 ): Promise<Result<ApiSuccess<T>, ApiError>> {
-  const result = await fromPromise(promise, (e: unknown): ApiError => {
-    if (e instanceof Error && (e as AxiosError).isAxiosError) {
-      const axiosErr = e as AxiosError;
-      const resp = axiosErr.response;
-
-      if (resp?.data && typeof resp.data === 'object' && 'error' in resp.data) {
-        return {
-          message: resp.data.error as string,
-          status: resp.status,
-        };
-      }
-
-      return {
-        message: axiosErr.message,
-        status: resp?.status,
-      };
-    }
-
-    return { message: e instanceof Error ? e.message : String(e) };
-  });
-
-  return result.map((res) => ({
-    data: res.data,
-    status: res.status,
-  }));
+  return fromPromise(promise, handleApiError).andThen((res) =>
+    parseResponseData(res.data, schema).map((parsedData) => ({
+      data: parsedData,
+      status: res.status,
+    }))
+  );
 }
 
 export const isApiError = (payload: unknown): payload is ApiError => {

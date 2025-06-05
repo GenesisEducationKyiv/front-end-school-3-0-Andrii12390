@@ -12,8 +12,8 @@ import TextInputField from './TextInput';
 import GenreSelector from './GenreSelector';
 import FormDialog from './FormDialog';
 
-import { trackFormSchema, type TTrackForm } from '@/lib/schemas';
-import type { ApiError, TTrack } from '@/types';
+import { TrackFormSchema, type TTrack, type TTrackForm } from '@/lib/schemas';
+import type { ApiError } from '@/types';
 import { customToast } from '../ui/toasts';
 import { selectGenres } from '@/features/genres/genresSlice';
 import { selectTracks } from '@/features/tracks/tracksSlice';
@@ -39,7 +39,7 @@ function EditTrackForm({ track, isOpenModal, setIsOpenModal }: ITrackEditor) {
   }, [dispatch]);
 
   const form = useForm<TTrackForm>({
-    resolver: zodResolver(trackFormSchema),
+    resolver: zodResolver(TrackFormSchema),
     defaultValues: {
       title: track.title,
       artist: track.artist,

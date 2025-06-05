@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { type TTrack } from '@/types';
 import {
   deleteTrack,
   uploadTrackFile,
@@ -20,6 +19,7 @@ import TrackInfo from './TrackInfo';
 import { twMerge } from 'tailwind-merge';
 import { API_URL } from '@/lib/config';
 import { formatTime } from '@/lib/helpers';
+import { type TTrack } from '@/lib/schemas';
 
 interface ITrackItemProps {
   track: TTrack;
