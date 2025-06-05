@@ -3,7 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CreateTrackForm from '../forms/CreateTrackForm';
-import { selectFilters, TField, TOrder } from '@/features/filters/filtersSlice';
+import {
+  selectFilters,
+  type TField,
+  type TOrder,
+} from '@/features/filters/filtersSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { bulkDeleteTracks, fetchTracks } from '@/features/tracks/trackThunks';
 import { fetchGenres } from '@/features/genres/genresThunk';
@@ -18,6 +22,8 @@ import Pagination from './TracksPagination';
 import { updateUrlParams } from '@/lib/helpers';
 import { TrackFilters } from './TrackFilters';
 import { useTrackFiltersUI } from '@/hooks/useTrackFiltersUI';
+import { type ApiError } from '@/types';
+import { customToast } from '../ui/toasts';
 
 function TracksToolbar() {
   const dispatch = useAppDispatch();
@@ -45,11 +51,22 @@ function TracksToolbar() {
   const isCreateModalOpen = searchParams.get('modal') === 'create';
 
   useEffect(() => {
-    dispatch(fetchGenres());
+    dispatch(fetchGenres())
+      .unwrap()
+      .catch((err: ApiError) => {
+        customToast.error(`Fetch failed: ${err.message}`);
+      });
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchTracks());
+    dispatch(fetchTracks()).then((result) => {
+      if (fetchTracks.rejected.match(result)) {
+        const err = result.payload ?? {
+          message: 'Failed to fetch tracks',
+        };
+        customToast.error(err.message);
+      }
+    });
   }, [
     dispatch,
     filters.page,
@@ -64,7 +81,14 @@ function TracksToolbar() {
   };
 
   const removeSelectedItems = () => {
-    dispatch(bulkDeleteTracks(selectedTracks));
+    dispatch(bulkDeleteTracks(selectedTracks)).then((result) => {
+      if (bulkDeleteTracks.rejected.match(result)) {
+        const err = result.payload ?? { message: 'Failed to delete tracks' };
+        customToast.error(err.message);
+      } else {
+        customToast.success('Selected tracks deleted');
+      }
+    });
   };
 
   const clearSelectedItems = () => {

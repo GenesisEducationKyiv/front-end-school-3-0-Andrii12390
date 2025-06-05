@@ -1,5 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { TTrack } from '@/types';
+import {
+  createSlice,
+  PayloadAction,
+  isRejectedWithValue,
+} from '@reduxjs/toolkit';
+import type { ApiError } from '@/types';
 import {
   createTrack,
   fetchTracks,
@@ -10,33 +14,33 @@ import {
   setActiveTrack,
   bulkDeleteTracks,
 } from './trackThunks';
-import { RootState } from '@/app/store';
-
-export interface IMetaData {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+import { type RootState } from '@/app/store';
+import { isApiError } from '@/lib/api';
+import type { TTrack, TMetaData } from '@/lib/schemas';
 
 export interface ITracksState {
   tracks: TTrack[];
   isLoading: boolean;
-  error: string | null;
+  error: ApiError | null;
   selectedIds: string[];
-  meta: IMetaData;
+  meta: TMetaData;
   activeTrack: TTrack | null;
   isPlaying: boolean;
 }
 
 const initialState: ITracksState = {
   tracks: [],
-  isLoading: true,
+  isLoading: false,
   error: null,
   selectedIds: [],
   meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
   activeTrack: null,
   isPlaying: false,
+};
+
+const handlePending = (state: ITracksState) => {
+  state.isLoading = true;
+  state.error = null;
 };
 
 const tracksSlice = createSlice({
@@ -45,25 +49,31 @@ const tracksSlice = createSlice({
   reducers: {
     playNextTrack: (state) => {
       if (!state.activeTrack) return;
-
       const currentIndex = state.tracks.findIndex(
         (t) => t.id === state.activeTrack?.id
       );
-
-      const next = state.tracks
-        .slice(currentIndex + 1)
-        .find((t) => !!t.audioFile);
-
-      state.activeTrack = next ?? null;
-      state.isPlaying = !!next;
+      const nextIndex = currentIndex + 1;
+      if (
+        nextIndex < state.tracks.length &&
+        state.tracks[nextIndex].audioFile
+      ) {
+        state.activeTrack = state.tracks[nextIndex];
+        state.isPlaying = true;
+      } else {
+        state.activeTrack = null;
+        state.isPlaying = false;
+      }
     },
     toggleSelectTrack: (state, action: PayloadAction<string>) => {
       const id = action.payload;
-      if (state.selectedIds.includes(id)) {
-        state.selectedIds = state.selectedIds.filter((i) => i !== id);
+      if (!state.tracks.some((track) => track.id === id)) return;
+      const set = new Set(state.selectedIds);
+      if (set.has(id)) {
+        set.delete(id);
       } else {
-        state.selectedIds.push(id);
+        set.add(id);
       }
+      state.selectedIds = Array.from(set);
     },
     selectAllTracks: (state) => {
       state.selectedIds = state.tracks.map((track) => track.id);
@@ -77,142 +87,119 @@ const tracksSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTracks.pending, (state) => {
-        state.isLoading = true;
-      })
+      .addCase(fetchTracks.pending, handlePending)
       .addCase(
         fetchTracks.fulfilled,
-        (state, action: PayloadAction<{ data: TTrack[]; meta: IMetaData }>) => {
+        (state, action: PayloadAction<{ data: TTrack[]; meta: TMetaData }>) => {
           state.tracks = action.payload.data;
           state.meta = action.payload.meta;
           state.isLoading = false;
-
-          if (!state.activeTrack && action.payload.data.length > 0) {
+          state.error = null;
+          if (
+            !state.activeTrack &&
+            action.payload.data.length > 0 &&
+            action.payload.data[0].audioFile
+          ) {
             state.activeTrack = action.payload.data[0];
             state.isPlaying = false;
           }
         }
       )
-      .addCase(fetchTracks.rejected, (state) => {
-        state.isLoading = false;
-        state.error = 'Error fetching tracks';
-      })
-      .addCase(createTrack.pending, (state) => {
-        state.isLoading = true;
-      })
+      .addCase(createTrack.pending, handlePending)
       .addCase(
         createTrack.fulfilled,
         (state, action: PayloadAction<TTrack>) => {
           state.tracks.push(action.payload);
           state.isLoading = false;
+          state.error = null;
         }
       )
-      .addCase(createTrack.rejected, (state) => {
-        state.isLoading = false;
-        state.error = 'Error creating tracks';
-      })
-      .addCase(editTrack.pending, (state) => {
-        state.isLoading = true;
-      })
+      .addCase(editTrack.pending, handlePending)
       .addCase(editTrack.fulfilled, (state, action: PayloadAction<TTrack>) => {
         const updated = action.payload;
-        state.tracks = state.tracks.map((i) =>
-          i.id === updated.id ? updated : i
-        );
+        const index = state.tracks.findIndex((i) => i.id === updated.id);
+        if (index !== -1) {
+          state.tracks[index] = updated;
+        }
         state.isLoading = false;
+        state.error = null;
       })
-      .addCase(editTrack.rejected, (state) => {
-        state.isLoading = false;
-        state.error = 'Error updating track';
-      })
-      .addCase(deleteTrack.pending, (state) => {
-        state.isLoading = true;
-      })
+      .addCase(deleteTrack.pending, handlePending)
       .addCase(
         deleteTrack.fulfilled,
         (state, action: PayloadAction<string>) => {
           state.tracks = state.tracks.filter((i) => i.id !== action.payload);
-
           if (state.activeTrack?.id === action.payload) {
             state.activeTrack = null;
             state.isPlaying = false;
           }
-
           state.isLoading = false;
+          state.error = null;
         }
       )
-      .addCase(deleteTrack.rejected, (state) => {
-        state.isLoading = false;
-        state.error = 'Error deleting track';
-      })
-      .addCase(uploadTrackFile.pending, (state) => {
-        state.isLoading = true;
-      })
+      .addCase(uploadTrackFile.pending, handlePending)
       .addCase(
         uploadTrackFile.fulfilled,
         (state, action: PayloadAction<TTrack>) => {
           const uploaded = action.payload;
-
-          state.tracks = state.tracks.map((i) =>
-            i.id === uploaded.id ? uploaded : i
-          );
-
+          const index = state.tracks.findIndex((i) => i.id === uploaded.id);
+          if (index !== -1) {
+            state.tracks[index] = uploaded;
+          }
           state.activeTrack = uploaded;
           state.isPlaying = true;
           state.isLoading = false;
+          state.error = null;
         }
       )
-      .addCase(uploadTrackFile.rejected, (state) => {
-        state.isLoading = false;
-        state.error = 'Error uploading file';
-      })
+      .addCase(deleteTrackFile.pending, handlePending)
+      .addCase(
+        deleteTrackFile.fulfilled,
+        (state, action: PayloadAction<TTrack>) => {
+          const updated = action.payload;
+          const index = state.tracks.findIndex((i) => i.id === updated.id);
+          if (index !== -1) {
+            state.tracks[index] = updated;
+          }
+          if (state.activeTrack?.id === updated.id) {
+            state.activeTrack = null;
+            state.isPlaying = false;
+          }
+          state.isLoading = false;
+          state.error = null;
+        }
+      )
       .addCase(
         setActiveTrack.fulfilled,
         (state, action: PayloadAction<TTrack>) => {
           state.activeTrack = action.payload;
           state.isPlaying = true;
+          state.error = null;
         }
       )
-      .addCase(deleteTrackFile.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(
-        deleteTrackFile.fulfilled,
-        (state, action: PayloadAction<TTrack>) => {
-          const updated = action.payload;
-
-          state.tracks = state.tracks.map((i) =>
-            i.id === updated.id ? updated : i
-          );
-
-          if (state.activeTrack?.id === updated.id) {
-            state.activeTrack = null;
-            state.isPlaying = false;
-          }
-
-          state.isLoading = false;
-        }
-      )
-      .addCase(deleteTrackFile.rejected, (state) => {
-        state.isLoading = false;
-      })
       .addCase(
         bulkDeleteTracks.fulfilled,
         (state, action: PayloadAction<string[]>) => {
+          const idsToDelete = new Set(action.payload);
           state.tracks = state.tracks.filter(
-            (track) => !action.payload.includes(track.id)
+            (track) => !idsToDelete.has(track.id)
           );
-          if (
-            state.activeTrack &&
-            state.selectedIds.includes(state.activeTrack.id)
-          ) {
+          if (state.activeTrack && idsToDelete.has(state.activeTrack.id)) {
             state.activeTrack = null;
             state.isPlaying = false;
           }
-
           state.selectedIds = [];
+          state.error = null;
         }
       );
+    builder.addMatcher(isRejectedWithValue, (state, action) => {
+      state.isLoading = false;
+      if (isApiError(action.payload)) {
+        state.error = action.payload;
+      } else {
+        state.error = { message: 'Unknown error' };
+      }
+    });
   },
 });
 

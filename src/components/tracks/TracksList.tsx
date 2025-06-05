@@ -2,7 +2,7 @@ import { useAppSelector } from '@/app/hooks';
 import { useState } from 'react';
 import TrackItem from '../track/TrackItem';
 import TrackListSkeleton from './TracksSkeleton';
-import { TTrack } from '@/types';
+import { type TTrack } from '@/types';
 import EditTrackModal from '../forms/EditTrackForm';
 import { selectTracks } from '@/features/tracks/tracksSlice';
 

@@ -9,12 +9,13 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { fetchGenres } from '@/features/genres/genresThunk';
 import { createTrack } from '@/features/tracks/trackThunks';
 import { Button } from '@/components/ui/button';
-import { trackFormSchema, TTrackForm } from './schemas';
+import { TrackFormSchema, type TTrackForm } from '@/lib/schemas';
 import TextInputField from './TextInput';
 import GenreSelector from './GenreSelector';
 import { customToast } from '../ui/toasts';
 import { selectGenres } from '@/features/genres/genresSlice';
 import { selectTracks } from '@/features/tracks/tracksSlice';
+import { type ApiError } from '@/types';
 
 function CreateTrackForm() {
   const dispatch = useAppDispatch();
@@ -23,11 +24,15 @@ function CreateTrackForm() {
   const { isLoading } = useAppSelector(selectTracks);
 
   useEffect(() => {
-    dispatch(fetchGenres());
+    dispatch(fetchGenres())
+      .unwrap()
+      .catch((err: ApiError) => {
+        customToast.error(`Fetch failed: ${err.message}`);
+      });
   }, [dispatch]);
 
   const form = useForm<TTrackForm>({
-    resolver: zodResolver(trackFormSchema),
+    resolver: zodResolver(TrackFormSchema),
     defaultValues: {
       title: '',
       artist: '',
@@ -38,14 +43,15 @@ function CreateTrackForm() {
   });
 
   const onSubmit = async (values: TTrackForm) => {
-    const result = await dispatch(createTrack(values));
-
-    if (createTrack.rejected.match(result)) {
-      return customToast.error('Failed to create track. Please try again');
-    }
-    customToast.success('Track created successfully');
-
-    setSearchParams(searchParams);
+    dispatch(createTrack(values)).then((result) => {
+      if (createTrack.fulfilled.match(result)) {
+        customToast.success('Track created successfully');
+        setSearchParams(searchParams);
+      } else {
+        const error = result.payload ?? { message: 'Unknown error' };
+        customToast.error(error.message);
+      }
+    });
   };
 
   return (

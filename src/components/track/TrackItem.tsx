@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { TTrack } from '@/types';
 import {
   deleteTrack,
   uploadTrackFile,
@@ -20,6 +19,7 @@ import TrackInfo from './TrackInfo';
 import { twMerge } from 'tailwind-merge';
 import { API_URL } from '@/lib/config';
 import { formatTime } from '@/lib/helpers';
+import { type TTrack } from '@/lib/schemas';
 
 interface ITrackItemProps {
   track: TTrack;
@@ -29,21 +29,26 @@ interface ITrackItemProps {
 function TrackItem({ track, handleEdit }: ITrackItemProps) {
   const dispatch = useAppDispatch();
   const { selectedIds, activeTrack } = useAppSelector(selectTracks);
-  const isSelected = selectedIds.includes(track.id);
-
   const [isTrackDeleteOpen, setIsTrackDeleteOpen] = useState(false);
   const [isFileDeleteOpen, setIsFileDeleteOpen] = useState(false);
+
   const [duration, setDuration] = useState<number | null>(null);
 
-  const handleRemoveTrack = async () => {
-    try {
-      await dispatch(deleteTrack(track.id));
-      customToast.success('Track successfully removed!');
-    } catch (e) {
-      customToast.error('Error deleting track!');
-    } finally {
-      setIsTrackDeleteOpen(false);
-    }
+  const handleRemoveTrack = () => {
+    dispatch(deleteTrack(track.id))
+      .then((result) => {
+        if (deleteTrack.rejected.match(result)) {
+          const err = result.payload ?? {
+            message: 'Unknown error',
+          };
+          customToast.error(err.message);
+        } else {
+          customToast.success('Track successfully removed!');
+        }
+      })
+      .finally(() => {
+        setIsTrackDeleteOpen(false);
+      });
   };
 
   useEffect(() => {
@@ -60,15 +65,21 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
     }
   }, [track.audioFile]);
 
-  const handleRemoveFile = async () => {
-    try {
-      await dispatch(deleteTrackFile(track.id));
-      customToast.success('File successfully removed!');
-    } catch (e) {
-      customToast.error('Error removing file!');
-    } finally {
-      setIsFileDeleteOpen(false);
-    }
+  const handleRemoveFile = () => {
+    dispatch(deleteTrackFile(track.id))
+      .then((result) => {
+        if (deleteTrackFile.rejected.match(result)) {
+          const err = result.payload ?? {
+            message: 'Unknown error',
+          };
+          customToast.error(err.message);
+        } else {
+          customToast.success('File successfully removed!');
+        }
+      })
+      .finally(() => {
+        setIsFileDeleteOpen(false);
+      });
   };
 
   const validateAndUploadFile = async (file: File) => {
@@ -91,7 +102,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
     try {
       await dispatch(uploadTrackFile({ id: track.id, file }));
       customToast.success('File successfully uploaded!');
-    } catch (e) {
+    } catch {
       customToast.error('Error uploading file!');
     }
   };
@@ -139,7 +150,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
           <span className='text-sm'>{formatTime(duration!)}</span>
           <TrackActions
             track={track}
-            isChecked={isSelected}
+            isChecked={selectedIds.includes(track.id)}
             onPlay={handlePlay}
             onEdit={() => handleEdit(track)}
             onFileUpload={validateAndUploadFile}

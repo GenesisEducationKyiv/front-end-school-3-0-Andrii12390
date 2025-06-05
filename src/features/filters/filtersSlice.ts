@@ -1,4 +1,4 @@
-import { RootState } from '@/app/store';
+import { type RootState } from '@/app/store';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type TField = 'title' | 'artist' | 'album' | 'createdAt';
