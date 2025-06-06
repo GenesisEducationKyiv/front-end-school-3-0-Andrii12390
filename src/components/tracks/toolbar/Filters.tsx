@@ -6,25 +6,26 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { Filter } from 'lucide-react';
-import { Button } from '../ui/button';
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '../ui/sheet';
+
 import { useAppSelector } from '@/app/hooks';
 import { selectGenres } from '@/features/genres/genresSlice';
 import { useFilters } from '@/hooks/useFilters';
 import type { TField, TOrder } from '@/features/filters/filtersSlice';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 
 interface ITrackFilters {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }
 
-export const TrackFilters = ({ isOpen, setIsOpen }: ITrackFilters) => {
+function Filters({ isOpen, setIsOpen }: ITrackFilters) {
   const { genres } = useAppSelector(selectGenres);
   const { filters, setSort, setOrder, setGenre, applyFilters, resetFilters } =
     useFilters();
@@ -115,4 +116,6 @@ export const TrackFilters = ({ isOpen, setIsOpen }: ITrackFilters) => {
       </SheetContent>
     </Sheet>
   );
-};
+}
+
+export default Filters;

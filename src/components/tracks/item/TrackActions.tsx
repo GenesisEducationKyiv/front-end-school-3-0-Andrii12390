@@ -5,13 +5,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical, Pause, Play } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox';
 import { useSelector } from 'react-redux';
 import { selectTracks } from '@/features/tracks/tracksSlice';
 import { useState } from 'react';
 import TrackFileDialog from './TrackFileDialog';
 import { type TTrack } from '@/lib/schemas';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface ITrackActionsProps {
   isChecked: boolean;

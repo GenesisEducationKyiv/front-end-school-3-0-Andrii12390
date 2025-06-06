@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import CreateTrackForm from '../forms/CreateTrackForm';
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { bulkDeleteTracks } from '@/features/tracks/trackThunks';
@@ -11,13 +10,13 @@ import {
   selectAllTracks,
   selectTracks,
 } from '@/features/tracks/tracksSlice';
-import Pagination from './TracksPagination';
 
-import { TrackFilters } from './TrackFilters';
-import { customToast } from '../ui/toasts';
 import { useFilters } from '@/hooks/useFilters';
+import { Filters, Pagination } from '..';
+import { CreateTrackForm } from '@/components/forms';
+import { customToast } from '@/components/ui/toasts';
 
-function TracksToolbar() {
+function Toolbar() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -69,7 +68,7 @@ function TracksToolbar() {
             className='w-full md:w-64 bg-input-background'
             type='search'
           />
-          <TrackFilters isOpen={isSheetOpen} setIsOpen={setIsSheetOpen} />
+          <Filters isOpen={isSheetOpen} setIsOpen={setIsSheetOpen} />
         </div>
 
         <Button
@@ -124,4 +123,4 @@ function TracksToolbar() {
   );
 }
 
-export default TracksToolbar;
+export default Toolbar;

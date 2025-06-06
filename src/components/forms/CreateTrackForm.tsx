@@ -1,20 +1,17 @@
 import { Form, FormField } from '@/components/ui/form';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import FormDialog from './FormDialog';
+import FormDialog from '../common/FormDialog';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { fetchGenres } from '@/features/genres/genresThunk';
 import { createTrack } from '@/features/tracks/trackThunks';
 import { Button } from '@/components/ui/button';
 import { TrackFormSchema, type TTrackForm } from '@/lib/schemas';
-import TextInputField from './TextInput';
+import TextInputField from '../common/TextInput';
 import GenreSelector from './GenreSelector';
 import { customToast } from '../ui/toasts';
 import { selectGenres } from '@/features/genres/genresSlice';
 import { selectTracks } from '@/features/tracks/tracksSlice';
-import { type ApiError } from '@/types';
 
 interface ICreateTrackFormProps {
   isOpen: boolean;
@@ -25,14 +22,6 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
   const dispatch = useAppDispatch();
   const { genres } = useAppSelector(selectGenres);
   const { isLoading } = useAppSelector(selectTracks);
-
-  useEffect(() => {
-    dispatch(fetchGenres())
-      .unwrap()
-      .catch((err: ApiError) => {
-        customToast.error(`Fetch failed: ${err.message}`);
-      });
-  }, [dispatch]);
 
   const form = useForm<TTrackForm>({
     resolver: zodResolver(TrackFormSchema),
@@ -45,7 +34,7 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
     },
   });
 
-  const onSubmit = async (values: TTrackForm) => {
+  const onSubmit = (values: TTrackForm) => {
     dispatch(createTrack(values)).then((result) => {
       if (createTrack.fulfilled.match(result)) {
         customToast.success('Track created successfully');
