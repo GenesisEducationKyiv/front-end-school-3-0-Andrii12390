@@ -1,36 +1,23 @@
-import { useSearchParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { selectFilters, setPage } from '@/features/filters/filtersSlice';
-import { fetchTracks } from '@/features/tracks/trackThunks';
+import { useAppSelector } from '@/app/hooks';
 import { twMerge } from 'tailwind-merge';
 import { selectTracks } from '@/features/tracks/tracksSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { customToast } from '../ui/toasts';
+import { useFilters } from '@/hooks/useFilters';
+import { useEffect } from 'react';
 
 function Pagination() {
-  const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
-
+  const { setPage, applyFilters, filters } = useFilters();
   const { isLoading, meta } = useAppSelector(selectTracks);
-  const filters = useAppSelector(selectFilters);
+
   const { page } = filters;
 
-  const updateUrlParams = (newPage: number) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('page', newPage.toString());
-    setSearchParams(newParams);
-  };
+  useEffect(() => {
+    applyFilters();
+  }, [filters.page]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= (meta.totalPages || 1) && !isLoading) {
-      dispatch(setPage(newPage));
-      updateUrlParams(newPage);
-      dispatch(fetchTracks()).then((result) => {
-        if (fetchTracks.rejected.match(result)) {
-          const err = result.payload ?? { message: 'Failed to fetch tracks' };
-          customToast.error(err.message);
-        }
-      });
+      setPage(newPage);
     }
   };
 

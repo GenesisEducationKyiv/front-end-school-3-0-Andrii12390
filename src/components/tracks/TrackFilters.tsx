@@ -16,38 +16,33 @@ import {
 } from '../ui/sheet';
 import { useAppSelector } from '@/app/hooks';
 import { selectGenres } from '@/features/genres/genresSlice';
+import { useFilters } from '@/hooks/useFilters';
 import type { TField, TOrder } from '@/features/filters/filtersSlice';
 
 interface ITrackFilters {
-  isSheetOpen: boolean;
-  setIsSheetOpen: (open: boolean) => void;
-  localSort: {
-    field: TField;
-    order: TOrder;
-  } | null;
-  handleSortFieldChange: (value: string) => void;
-  handleSortOrderChange: (value: string) => void;
-  localGenre: string;
-  handleGenreChange: (value: string) => void;
-  applyFilters: () => void;
-  clearFilters: () => void;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
 }
 
-export const TrackFilters = ({
-  isSheetOpen,
-  setIsSheetOpen,
-  localSort,
-  handleSortFieldChange,
-  handleSortOrderChange,
-  localGenre,
-  handleGenreChange,
-  applyFilters,
-  clearFilters,
-}: ITrackFilters) => {
+export const TrackFilters = ({ isOpen, setIsOpen }: ITrackFilters) => {
   const { genres } = useAppSelector(selectGenres);
+  const { filters, setSort, setOrder, setGenre, applyFilters, resetFilters } =
+    useFilters();
+
+  const handleSortFieldChange = (value: string) => {
+    setSort(value as TField);
+  };
+
+  const handleSortOrderChange = (value: string) => {
+    setOrder(value as TOrder);
+  };
+
+  const handleGenreChange = (value: string) => {
+    setGenre(value);
+  };
 
   return (
-    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant='outline' className='h-9 bg-button mr-3'>
           <Filter /> <span>Filters</span>
@@ -62,7 +57,7 @@ export const TrackFilters = ({
 
         <div className='flex flex-col gap-4 mt-4 p-10'>
           <Select
-            value={localSort?.field || ''}
+            value={filters.sort || ''}
             onValueChange={handleSortFieldChange}
           >
             <SelectTrigger className='w-full'>
@@ -77,9 +72,9 @@ export const TrackFilters = ({
           </Select>
 
           <Select
-            value={localSort?.order || 'asc'}
+            value={filters.order || 'asc'}
             onValueChange={handleSortOrderChange}
-            disabled={!localSort}
+            disabled={!filters.sort}
           >
             <SelectTrigger className='w-full'>
               <SelectValue placeholder='Order' />
@@ -90,7 +85,7 @@ export const TrackFilters = ({
             </SelectContent>
           </Select>
 
-          <Select value={localGenre} onValueChange={handleGenreChange}>
+          <Select value={filters.genre || ''} onValueChange={handleGenreChange}>
             <SelectTrigger className='w-full'>
               <SelectValue placeholder='Filter by genre' />
             </SelectTrigger>
@@ -110,7 +105,7 @@ export const TrackFilters = ({
             Apply Filters
           </Button>
           <Button
-            onClick={clearFilters}
+            onClick={resetFilters}
             variant='outline'
             className='w-full h-10 active:scale-95 bg-button'
           >

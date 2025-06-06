@@ -2,7 +2,6 @@ import { Form, FormField } from '@/components/ui/form';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'react-router-dom';
 
 import FormDialog from './FormDialog';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
@@ -17,9 +16,13 @@ import { selectGenres } from '@/features/genres/genresSlice';
 import { selectTracks } from '@/features/tracks/tracksSlice';
 import { type ApiError } from '@/types';
 
-function CreateTrackForm() {
+interface ICreateTrackFormProps {
+  isOpen: boolean;
+  handleClose: () => void;
+}
+
+function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { genres } = useAppSelector(selectGenres);
   const { isLoading } = useAppSelector(selectTracks);
 
@@ -46,7 +49,6 @@ function CreateTrackForm() {
     dispatch(createTrack(values)).then((result) => {
       if (createTrack.fulfilled.match(result)) {
         customToast.success('Track created successfully');
-        setSearchParams(searchParams);
       } else {
         const error = result.payload ?? { message: 'Unknown error' };
         customToast.error(error.message);
@@ -55,14 +57,7 @@ function CreateTrackForm() {
   };
 
   return (
-    <FormDialog
-      isOpen={searchParams.get('modal') === 'create'}
-      title='Create Track'
-      onClose={() => {
-        searchParams.delete('modal');
-        setSearchParams(searchParams);
-      }}
-    >
+    <FormDialog isOpen={isOpen} title='Create Track' onClose={handleClose}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
           <TextInputField
