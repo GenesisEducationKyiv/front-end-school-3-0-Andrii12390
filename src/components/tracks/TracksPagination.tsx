@@ -1,41 +1,11 @@
-import { useAppSelector } from '@/app/hooks';
 import { twMerge } from 'tailwind-merge';
-import { selectTracks } from '@/features/tracks/tracksSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useFilters } from '@/hooks/useFilters';
-import { useEffect } from 'react';
+import { usePagination } from '@/hooks/usePagination';
 
 function Pagination() {
-  const { setPage, applyFilters, filters } = useFilters();
-  const { isLoading, meta } = useAppSelector(selectTracks);
+  const { isLoading, page, handleNext, handlePrev, totalPages } = usePagination();
 
-  const { page } = filters;
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters.page]);
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= (meta.totalPages || 1) && !isLoading) {
-      setPage(newPage);
-    }
-  };
-
-  const handleNext = () => {
-    if (page < (meta.totalPages || 1) && !isLoading) {
-      handlePageChange(page + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (page > 1 && !isLoading) {
-      handlePageChange(page - 1);
-    }
-  };
-
-  if (!meta.totalPages || meta.totalPages <= 1) {
-    return null;
-  }
+  if (totalPages <= 1) return null;
 
   return (
     <nav
@@ -62,19 +32,19 @@ function Pagination() {
       <div className='text-sm text-muted font-medium min-w-[3rem] text-center'>
         <span
           aria-live='polite'
-          aria-label={`Page ${page} of ${meta.totalPages}`}
+          aria-label={`Page ${page} of ${totalPages}`}
         >
-          {page}/{meta.totalPages}
+          {page}/{totalPages}
         </span>
       </div>
 
       <button
         onClick={handleNext}
-        disabled={page >= (meta.totalPages || 1) || isLoading}
+        disabled={page >= (totalPages || 1) || isLoading}
         data-testid='pagination-next'
         className={twMerge(
           'size-8 flex items-center justify-center rounded-full border border-muted transition-all duration-200',
-          page >= (meta.totalPages || 1) || isLoading
+          page >= (totalPages || 1) || isLoading
             ? ''
             : 'hover:text-primary hover:border-primary cursor-pointer'
         )}
