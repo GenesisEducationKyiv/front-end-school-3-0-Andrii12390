@@ -1,13 +1,13 @@
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '../../ui/skeleton';
 
 interface ITrackSkeletonProps {
-  tracksAmount: number;
+  tracksQuantity?: number;
 }
 
-function TracksSkeleton({ tracksAmount }: ITrackSkeletonProps) {
+function TracksSkeleton({ tracksQuantity = 10 }: ITrackSkeletonProps) {
   return (
     <ul data-testid='loading-tracks' className='px-2'>
-      {Array.from({ length: tracksAmount }).map(() => (
+      {Array.from({ length: tracksQuantity }).map(() => (
         <li key={Math.floor(Math.random() * 1e6)} className='flex gap-4 mb-3'>
           <Skeleton className='size-[64px] shrink-0 rounded-full bg-skeleton' />
           <div className='w-full flex flex-col gap-2 justify-center'>

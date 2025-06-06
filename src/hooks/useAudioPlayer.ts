@@ -21,7 +21,7 @@ const initialState: IAudioState = {
   duration: 0,
 };
 
-export function useAudioPlayer(track: TTrack | null) {
+export const useAudioPlayer = (track: TTrack | null) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [audioState, setAudioState] = useState<IAudioState>(initialState);
@@ -100,4 +100,4 @@ export function useAudioPlayer(track: TTrack | null) {
     handleSeek,
     onEnded: () => dispatch(playNextTrack()),
   };
-}
+};

@@ -8,6 +8,7 @@ import {
   TrackListResponseSchema,
   TrackResponseSchema,
 } from '@/lib/schemas';
+import { buildQueryParams } from '@/lib/helpers';
 
 export const createTrack = createAsyncThunk<
   TTrack,
@@ -25,24 +26,17 @@ export const createTrack = createAsyncThunk<
 
   return result.value.data;
 });
-
 export const fetchTracks = createAsyncThunk<
   { data: TTrack[]; meta: TMetaData },
   void,
   { state: RootState; rejectValue: ApiError }
 >('tracks/fetchAll', async (_, { getState, rejectWithValue }) => {
   const { filters } = getState();
-  const params: Record<string, string | number> = {
-    page: filters.page,
-    limit: filters.limit,
-  };
-  if (filters.sort?.field) params.sort = filters.sort.field;
-  if (filters.sort?.order) params.order = filters.sort.order;
-  if (filters.search.trim()) params.search = filters.search.trim();
-  if (filters.genre.trim()) params.genre = filters.genre.trim();
+
+  const queryString = buildQueryParams(filters);
 
   const result = await safeApi<{ data: TTrack[]; meta: TMetaData }>(
-    api.get<{ data: TTrack[]; meta: TMetaData }>('/api/tracks', { params }),
+    api.get<{ data: TTrack[]; meta: TMetaData }>(`/api/tracks?${queryString}`),
     TrackListResponseSchema
   );
 

@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import NotFound from '@/pages/NotFound';
 import Tracks from '@/pages/Tracks';
-import ErrorBoundary from '@/components/errors/ErrorBoundary';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 import Home from '@/pages/Home';
 import { ROUTES } from './paths';
 

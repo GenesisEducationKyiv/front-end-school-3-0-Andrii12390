@@ -11,15 +11,15 @@ import {
   toggleSelectTrack,
   togglePlayPause,
 } from '@/features/tracks/tracksSlice';
-import { customToast } from '../ui/toasts';
-import TrackCover from './TrackCover';
-import TrackActions from './TrackActions';
-import TrackDeleteDialogs from './TrackDeleteDialog';
-import TrackInfo from './TrackInfo';
+
 import { twMerge } from 'tailwind-merge';
 import { API_URL } from '@/lib/config';
-import { formatTime } from '@/lib/helpers';
+import { formatTime, validateAudioFile } from '@/lib/helpers';
 import { type TTrack } from '@/lib/schemas';
+import { customToast } from '@/components/ui/toasts';
+import TrackActions from './TrackActions';
+import TrackInfo from './TrackInfo';
+import TrackDeleteDialog from './TrackDeleteDialog';
 
 interface ITrackItemProps {
   track: TTrack;
@@ -82,29 +82,20 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
       });
   };
 
-  const validateAndUploadFile = async (file: File) => {
-    const maxSizeMB = 10;
-    const allowedTypes = [
-      'audio/mpeg',
-      'audio/wav',
-      'audio/x-wav',
-      'audio/mp3',
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      return customToast.error('Only MP3 or WAV files are allowed');
+  const validateAndUploadFile = (file: File) => {
+    const errorMessage = validateAudioFile(file);
+    if (errorMessage) {
+      return customToast.error(errorMessage);
     }
 
-    if (file.size > maxSizeMB * 1024 * 1024) {
-      return customToast.error(`File size should be less than ${maxSizeMB}MB`);
-    }
-
-    try {
-      await dispatch(uploadTrackFile({ id: track.id, file }));
-      customToast.success('File successfully uploaded!');
-    } catch {
-      customToast.error('Error uploading file!');
-    }
+    dispatch(uploadTrackFile({ id: track.id, file })).then((result) => {
+      if (uploadTrackFile.rejected.match(result)) {
+        const err = result.payload ?? { message: 'Unknown error' };
+        customToast.error(err.message);
+      } else {
+        customToast.success('File successfully uploaded!');
+      }
+    });
   };
 
   const handlePlay = () => {
@@ -137,14 +128,12 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
             : ''
         )}
       >
-        <section className='flex gap-4 items-center'>
-          <TrackCover coverImage={track.coverImage} />
-          <TrackInfo
-            artist={track.artist}
-            title={track.title}
-            trackId={track.id}
-          />
-        </section>
+        <TrackInfo
+          coverImage={track.coverImage}
+          artist={track.artist}
+          title={track.title}
+          trackId={track.id}
+        />
 
         <section className='flex items-center gap-4'>
           <span className='text-sm'>{formatTime(duration!)}</span>
@@ -161,7 +150,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
         </section>
       </li>
 
-      <TrackDeleteDialogs
+      <TrackDeleteDialog
         isFileDeleteOpen={isFileDeleteOpen}
         isTrackDeleteOpen={isTrackDeleteOpen}
         setIsFileDeleteOpen={setIsFileDeleteOpen}

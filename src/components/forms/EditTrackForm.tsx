@@ -1,42 +1,31 @@
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { editTrack } from '@/features/tracks/trackThunks';
-import { fetchGenres } from '@/features/genres/genresThunk';
 
 import { Form, FormField } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
-import TextInputField from './TextInput';
+import TextInputField from '../common/TextInput';
 import GenreSelector from './GenreSelector';
-import FormDialog from './FormDialog';
+import FormDialog from '../common/FormDialog';
 
 import { TrackFormSchema, type TTrack, type TTrackForm } from '@/lib/schemas';
-import type { ApiError } from '@/types';
 import { customToast } from '../ui/toasts';
 import { selectGenres } from '@/features/genres/genresSlice';
 import { selectTracks } from '@/features/tracks/tracksSlice';
 
-interface ITrackEditor {
+interface IEditTrackForm {
   track: TTrack;
-  isOpenModal: boolean;
-  setIsOpenModal: (val: boolean) => void;
+  isOpen: boolean;
+  handleClose: () => void;
 }
 
-function EditTrackForm({ track, isOpenModal, setIsOpenModal }: ITrackEditor) {
+function EditTrackForm({ track, isOpen, handleClose }: IEditTrackForm) {
   const dispatch = useAppDispatch();
 
   const { genres } = useAppSelector(selectGenres);
   const { isLoading } = useAppSelector(selectTracks);
-
-  useEffect(() => {
-    dispatch(fetchGenres())
-      .unwrap()
-      .catch((err: ApiError) => {
-        customToast.error(`Fetch failed: ${err.message}`);
-      });
-  }, [dispatch]);
 
   const form = useForm<TTrackForm>({
     resolver: zodResolver(TrackFormSchema),
@@ -62,13 +51,7 @@ function EditTrackForm({ track, isOpenModal, setIsOpenModal }: ITrackEditor) {
   };
 
   return (
-    <FormDialog
-      isOpen={isOpenModal}
-      title='Edit track'
-      onClose={() => {
-        setIsOpenModal(false);
-      }}
-    >
+    <FormDialog isOpen={isOpen} title='Edit track' onClose={handleClose}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
           <TextInputField
