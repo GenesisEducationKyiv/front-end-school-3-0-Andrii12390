@@ -15,8 +15,8 @@ import {
   bulkDeleteTracks,
 } from './trackThunks';
 import { type RootState } from '@/app/store';
-import { isApiError } from '@/lib/api';
 import type { TTrack, TMetaData } from '@/lib/schemas';
+import { isApiError } from '@/lib/guards';
 
 export interface ITracksState {
   tracks: TTrack[];
@@ -180,11 +180,13 @@ const tracksSlice = createSlice({
       .addCase(
         bulkDeleteTracks.fulfilled,
         (state, action: PayloadAction<string[]>) => {
-          const idsToDelete = new Set(action.payload);
+          const ids = action.payload;
+
           state.tracks = state.tracks.filter(
-            (track) => !idsToDelete.has(track.id)
+            (track) => !ids.includes(track.id)
           );
-          if (state.activeTrack && idsToDelete.has(state.activeTrack.id)) {
+
+          if (state.activeTrack && !ids.includes(state.activeTrack.id)) {
             state.activeTrack = null;
             state.isPlaying = false;
           }

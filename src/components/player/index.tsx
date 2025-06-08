@@ -1,9 +1,9 @@
 import { Pause, Play } from 'lucide-react';
-import { type TTrack } from '@/types';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { Button } from '../ui/button';
 import { API_URL } from '@/lib/config';
 import { formatTime } from '@/lib/helpers';
+import { type TTrack } from '@/lib/schemas';
 
 interface IAudioPlayerProps {
   track: TTrack | null;
