@@ -47,6 +47,27 @@ export const TrackListResponseSchema = z.object({
   meta: TrackMetadataResponse,
 });
 
+export const FiltersQuerySchema = z.object({
+  search: z.string().optional().default(''),
+  sort: z
+    .enum(['title', 'artist', 'album', 'createdAt'])
+    .nullable()
+    .default(null),
+  order: z.enum(['asc', 'desc']).nullable().default(null),
+  genre: z.string().nullable().default(null),
+  artist: z.string().nullable().default(null),
+  page: z.preprocess(
+    (val) =>
+      typeof val === 'string' && !isNaN(+val) ? parseInt(val, 10) : undefined,
+    z.number().int().min(1).default(1)
+  ),
+  limit: z.preprocess(
+    (val) =>
+      typeof val === 'string' && !isNaN(+val) ? parseInt(val, 10) : undefined,
+    z.number().int().min(1).default(10)
+  ),
+});
+
 export type TTrack = z.infer<typeof TrackResponseSchema> & {
   audioFile?: string;
 };

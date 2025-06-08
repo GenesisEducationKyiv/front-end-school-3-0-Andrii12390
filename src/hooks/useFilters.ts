@@ -9,7 +9,7 @@ import {
   TOrder,
 } from '@/features/filters/filtersSlice';
 import { buildQueryParams, parseQueryParams } from '@/lib/helpers';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from './useDebounce';
 
@@ -18,44 +18,69 @@ export const useFilters = () => {
   const storedFilters = useAppSelector(selectFilters);
   const [, setSearchParams] = useSearchParams();
   const [localFilters, setLocalFilters] = useState<FiltersState>(storedFilters);
-  const debouncedSearch = useDebounce(localFilters.search);
+  const debouncedSearch = useDebounce(localFilters.search, 500);
+  const isInitialized = useRef(false);
+  const prevDebouncedSearch = useRef(debouncedSearch);
 
   useEffect(() => {
-    const queryParams = parseQueryParams();
-    dispatch(setFilters(queryParams));
-    setLocalFilters((prev) => ({ ...prev, ...queryParams }));
-  }, [dispatch]);
+    if (!isInitialized.current) {
+      const queryParams = parseQueryParams();
+
+      dispatch(setFilters({ ...storedFilters, ...queryParams }));
+      setLocalFilters({ ...storedFilters, ...queryParams });
+      isInitialized.current = true;
+    }
+  }, []);
 
   useEffect(() => {
-    const newFilters: FiltersState = {
-      ...localFilters,
-      search: debouncedSearch,
-      page: 1,
-    };
-    dispatch(setFilters(newFilters));
-    const queryString = buildQueryParams(newFilters);
-    setSearchParams(queryString ? new URLSearchParams(queryString) : {});
-  }, [debouncedSearch]);
+    if (
+      isInitialized.current &&
+      debouncedSearch !== prevDebouncedSearch.current &&
+      debouncedSearch !== storedFilters.search
+    ) {
+      const newFilters: FiltersState = {
+        ...storedFilters,
+        search: debouncedSearch,
+        page: 1,
+      };
+
+      dispatch(setFilters(newFilters));
+
+      setSearchParams(buildQueryParams(newFilters));
+    }
+
+    prevDebouncedSearch.current = debouncedSearch;
+  }, [debouncedSearch, dispatch, setSearchParams, storedFilters]);
+
+  useEffect(() => {
+    setLocalFilters(storedFilters);
+  }, [storedFilters]);
 
   const updateLocalFilter = <K extends keyof FiltersState>(
     key: K,
     value: FiltersState[K]
   ) => {
-    setLocalFilters((prev) => ({
-      ...prev,
+    const newFilters = {
+      ...localFilters,
       [key]: value,
       ...(key !== 'page' && key !== 'search' ? { page: 1 } : {}),
-    }));
+    };
+
+    setLocalFilters(newFilters);
+
+    if (key === 'page') {
+      dispatch(setFilters(newFilters));
+      setSearchParams(buildQueryParams(newFilters));
+    }
   };
 
   const applyFilters = () => {
     dispatch(setFilters(localFilters));
-    const queryString = buildQueryParams(localFilters);
-    setSearchParams(queryString ? new URLSearchParams(queryString) : {});
+    setSearchParams(buildQueryParams(localFilters));
   };
 
   const resetLocalFilters = () => {
-    setLocalFilters({ ...initialFilters });
+    setLocalFilters({ ...initialFilters, page: 1 });
     dispatch(resetFilters());
     setSearchParams({});
   };

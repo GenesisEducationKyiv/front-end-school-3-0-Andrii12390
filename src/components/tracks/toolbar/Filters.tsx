@@ -10,7 +10,6 @@ import { Filter } from 'lucide-react';
 import { useAppSelector } from '@/app/hooks';
 import { selectGenres } from '@/features/genres/genresSlice';
 import { useFilters } from '@/hooks/useFilters';
-import type { TField, TOrder } from '@/features/filters/filtersSlice';
 import {
   Sheet,
   SheetContent,
@@ -19,6 +18,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { isTField, isTOrder } from '@/lib/guards';
 
 interface ITrackFilters {
   isOpen: boolean;
@@ -31,11 +31,11 @@ function Filters({ isOpen, setIsOpen }: ITrackFilters) {
     useFilters();
 
   const handleSortFieldChange = (value: string) => {
-    setSort(value as TField);
+    setSort(isTField(value) ? value : null);
   };
 
   const handleSortOrderChange = (value: string) => {
-    setOrder(value as TOrder);
+    setOrder(isTOrder(value) ? value : null);
   };
 
   const handleGenreChange = (value: string) => {

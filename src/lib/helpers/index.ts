@@ -1,9 +1,8 @@
 import {
   initialState,
   type FiltersState,
-  type TField,
-  type TOrder,
 } from '@/features/filters/filtersSlice';
+import { FiltersQuerySchema } from '../schemas';
 
 export const buildQueryParams = (filters: FiltersState): string => {
   const params = new URLSearchParams();
@@ -21,18 +20,12 @@ export const buildQueryParams = (filters: FiltersState): string => {
   return params.toString();
 };
 
-export const parseQueryParams = (): Partial<FiltersState> => {
-  const params = new URLSearchParams(window.location.search);
-  return {
-    search: params.get('search') || '',
-    order: (params.get('order') as TOrder) || null,
-    sort: (params.get('sort') as TField) || null,
-    genre: params.get('genre') || null,
-    artist: params.get('artist') || null,
-    page: params.get('page') ? Number(params.get('page')) : 1,
-    limit: params.get('limit') ? Number(params.get('limit')) : 10,
-  };
-};
+export function parseQueryParams(): Partial<FiltersState> {
+  const raw = Object.fromEntries(new URLSearchParams(window.location.search));
+  const parsed = FiltersQuerySchema.safeParse(raw);
+
+  return parsed.success ? parsed.data : {};
+}
 
 export const validateAudioFile = (file: File): string | null => {
   const maxSizeMB = 10;

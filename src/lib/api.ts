@@ -56,9 +56,3 @@ export async function safeApi<T>(
     }))
   );
 }
-
-export const isApiError = (payload: unknown): payload is ApiError => {
-  return (
-    typeof payload === 'object' && payload !== null && 'message' in payload
-  );
-};

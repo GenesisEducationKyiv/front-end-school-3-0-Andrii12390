@@ -15,8 +15,8 @@ import {
   bulkDeleteTracks,
 } from './trackThunks';
 import { type RootState } from '@/app/store';
-import { isApiError } from '@/lib/api';
 import type { TTrack, TMetaData } from '@/lib/schemas';
+import { isApiError } from '@/lib/guards';
 
 export interface ITracksState {
   tracks: TTrack[];
