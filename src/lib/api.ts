@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { ZodSchema } from 'zod';
 import { API_URL } from './config';
 import type { ApiSuccess, ApiError } from '@/types';
-import { Result, fromPromise, ok, err } from 'neverthrow';
+import { R } from '@mobily/ts-belt';
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -29,30 +29,36 @@ const handleApiError = (error: unknown): ApiError => {
   };
 };
 
-const parseResponseData = <T>(
+const parseResponseData = <T extends {}>(
   data: T,
   schema?: ZodSchema<T>
-): Result<T, ApiError> => {
-  if (!schema) {
-    return ok(data as T);
-  }
+): R.Result<T, ApiError> => {
+  if (!schema) return R.Ok(data);
+
   const parsed = schema.safeParse(data);
-  if (!parsed.success) {
-    return err({
-      message: 'Invalid Response data',
-    });
-  }
-  return ok(parsed.data);
+
+  return parsed.success
+    ? R.Ok(parsed.data)
+    : R.Error({
+        message: 'Invalid Response data',
+      });
 };
 
-export async function safeApi<T>(
+export async function safeApi<T extends {}>(
   promise: Promise<AxiosResponse<T>>,
   schema?: ZodSchema<T>
-): Promise<Result<ApiSuccess<T>, ApiError>> {
-  return fromPromise(promise, handleApiError).andThen((res) =>
-    parseResponseData(res.data, schema).map((parsedData) => ({
-      data: parsedData,
-      status: res.status,
-    }))
+): Promise<R.Result<ApiSuccess<T>, ApiError>> {
+  return promise.then(
+    (res) => {
+      const parsedRes = parseResponseData(res.data, schema);
+
+      return R.map(parsedRes, (parsedData) => ({
+        data: parsedData,
+        status: res.status,
+      }));
+    },
+    (err) => {
+      return R.Error(handleApiError(err));
+    }
   );
 }

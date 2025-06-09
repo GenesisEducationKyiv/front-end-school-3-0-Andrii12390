@@ -4,9 +4,10 @@ import { Button } from '../ui/button';
 import { API_URL } from '@/lib/config';
 import { formatTime } from '@/lib/helpers';
 import { type TTrack } from '@/lib/schemas';
+import { type Option } from '@mobily/ts-belt';
 
 interface IAudioPlayerProps {
-  track: TTrack | null;
+  track: Option<TTrack>;
 }
 
 const btnStyles =

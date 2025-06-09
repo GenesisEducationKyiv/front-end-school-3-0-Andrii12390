@@ -20,6 +20,7 @@ import { customToast } from '@/components/ui/toasts';
 import TrackActions from './TrackActions';
 import TrackInfo from './TrackInfo';
 import TrackDeleteDialog from './TrackDeleteDialog';
+import { type Option } from '@mobily/ts-belt';
 
 interface ITrackItemProps {
   track: TTrack;
@@ -32,7 +33,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
   const [isTrackDeleteOpen, setIsTrackDeleteOpen] = useState(false);
   const [isFileDeleteOpen, setIsFileDeleteOpen] = useState(false);
 
-  const [duration, setDuration] = useState<number | null>(null);
+  const [duration, setDuration] = useState<Option<number>>(null);
 
   const handleRemoveTrack = () => {
     dispatch(deleteTrack(track.id))

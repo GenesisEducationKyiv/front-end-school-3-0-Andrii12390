@@ -1,4 +1,5 @@
 import { type RootState } from '@/app/store';
+import { Option } from '@mobily/ts-belt';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type TField = 'title' | 'artist' | 'album' | 'createdAt';
@@ -6,10 +7,10 @@ export type TOrder = 'asc' | 'desc';
 
 export interface FiltersState {
   search: string;
-  order: TOrder | null;
-  sort: TField | null;
-  genre: string | null;
-  artist: string | null;
+  order: Option<TOrder>;
+  sort: Option<TField>;
+  genre: Option<string>;
+  artist: Option<string>;
   page: number;
   limit: number;
 }
