@@ -5,13 +5,14 @@ import {
   resetFilters,
   selectFilters,
   setFilters,
-  TField,
-  TOrder,
+  type TField,
+  type TOrder,
 } from '@/features/filters/filtersSlice';
 import { buildQueryParams, parseQueryParams } from '@/lib/helpers';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from './useDebounce';
+import { O, pipe, type Option } from '@mobily/ts-belt';
 
 export const useFilters = () => {
   const dispatch = useAppDispatch();
@@ -24,10 +25,16 @@ export const useFilters = () => {
 
   useEffect(() => {
     if (!isInitialized.current) {
-      const queryParams = parseQueryParams();
+      const merged = pipe(
+        parseQueryParams(),
+        O.fromNullable,
+        O.map((queryParams) => ({ ...storedFilters, ...queryParams })),
+        O.getWithDefault(storedFilters)
+      );
 
-      dispatch(setFilters({ ...storedFilters, ...queryParams }));
-      setLocalFilters({ ...storedFilters, ...queryParams });
+      dispatch(setFilters(merged));
+      setLocalFilters(merged);
+
       isInitialized.current = true;
     }
   }, []);
@@ -60,11 +67,14 @@ export const useFilters = () => {
     key: K,
     value: FiltersState[K]
   ) => {
-    const newFilters = {
-      ...localFilters,
-      [key]: value,
-      ...(key !== 'page' && key !== 'search' ? { page: 1 } : {}),
-    };
+    const resetPage = (filters: FiltersState) =>
+      key === 'page' || key === 'search' ? filters : { ...filters, page: 1 };
+
+    const newFilters = pipe(
+      localFilters,
+      (filters) => ({ ...filters, [key]: value }),
+      resetPage
+    );
 
     setLocalFilters(newFilters);
 
@@ -75,23 +85,27 @@ export const useFilters = () => {
   };
 
   const applyFilters = () => {
-    dispatch(setFilters(localFilters));
-    setSearchParams(buildQueryParams(localFilters));
+    pipe(localFilters, (filters) => {
+      dispatch(setFilters(filters));
+      setSearchParams(buildQueryParams(filters));
+    });
   };
 
   const resetLocalFilters = () => {
-    setLocalFilters({ ...initialFilters, page: 1 });
-    dispatch(resetFilters());
-    setSearchParams({});
+    pipe({ ...initialFilters, page: 1 }, (filters) => {
+      setLocalFilters(filters);
+      dispatch(resetFilters());
+      setSearchParams({});
+    });
   };
 
   return {
     filters: localFilters,
     setSearch: (value: string) => updateLocalFilter('search', value),
-    setOrder: (value: TOrder | null) => updateLocalFilter('order', value),
-    setSort: (value: TField | null) => updateLocalFilter('sort', value),
-    setGenre: (value: string | null) => updateLocalFilter('genre', value),
-    setArtist: (value: string | null) => updateLocalFilter('artist', value),
+    setOrder: (value: Option<TOrder>) => updateLocalFilter('order', value),
+    setSort: (value: Option<TField>) => updateLocalFilter('sort', value),
+    setGenre: (value: Option<string>) => updateLocalFilter('genre', value),
+    setArtist: (value: Option<string>) => updateLocalFilter('artist', value),
     setPage: (value: number) => updateLocalFilter('page', value),
     setLimit: (value: number) => updateLocalFilter('limit', value),
     applyFilters,

@@ -17,14 +17,15 @@ import {
 import { type RootState } from '@/app/store';
 import type { TTrack, TMetaData } from '@/lib/schemas';
 import { isApiError } from '@/lib/guards';
+import { Option } from '@mobily/ts-belt';
 
 export interface ITracksState {
   tracks: TTrack[];
   isLoading: boolean;
-  error: ApiError | null;
+  error: Option<ApiError>;
   selectedIds: string[];
   meta: TMetaData;
-  activeTrack: TTrack | null;
+  activeTrack: Option<TTrack>;
   isPlaying: boolean;
 }
 

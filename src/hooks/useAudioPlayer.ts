@@ -6,6 +6,7 @@ import {
   togglePlayPause,
 } from '@/features/tracks/tracksSlice';
 import { type TTrack } from '@/lib/schemas';
+import { type Option } from '@mobily/ts-belt';
 
 interface IAudioState {
   isPlaying: boolean;
@@ -21,7 +22,7 @@ const initialState: IAudioState = {
   duration: 0,
 };
 
-export const useAudioPlayer = (track: TTrack | null) => {
+export const useAudioPlayer = (track: Option<TTrack>) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [audioState, setAudioState] = useState<IAudioState>(initialState);

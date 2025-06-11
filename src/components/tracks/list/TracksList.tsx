@@ -10,6 +10,7 @@ import { selectFilters } from '@/features/filters/filtersSlice';
 import { type TTrack } from '@/lib/schemas';
 import { type ApiError } from '@/types';
 import { EditTrackForm } from '@/components/forms';
+import { type Option } from '@mobily/ts-belt';
 
 function TrackList() {
   const { tracks, isLoading } = useAppSelector(selectTracks);
@@ -18,7 +19,7 @@ function TrackList() {
 
   const filters = useAppSelector(selectFilters);
 
-  const [trackToEdit, setTrackToEdit] = useState<TTrack | null>(null);
+  const [trackToEdit, setTrackToEdit] = useState<Option<TTrack>>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleEditTrack = (track: TTrack) => {

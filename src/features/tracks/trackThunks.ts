@@ -9,6 +9,7 @@ import {
   TrackResponseSchema,
 } from '@/lib/schemas';
 import { buildQueryParams } from '@/lib/helpers';
+import { R } from '@mobily/ts-belt';
 
 export const createTrack = createAsyncThunk<
   TTrack,
@@ -20,12 +21,13 @@ export const createTrack = createAsyncThunk<
     TrackResponseSchema
   );
 
-  if (result.isErr()) {
-    return rejectWithValue(result.error);
+  if (R.isError(result)) {
+    return rejectWithValue(result._0);
   }
 
-  return result.value.data;
+  return result._0.data;
 });
+
 export const fetchTracks = createAsyncThunk<
   { data: TTrack[]; meta: TMetaData },
   void,
@@ -40,11 +42,11 @@ export const fetchTracks = createAsyncThunk<
     TrackListResponseSchema
   );
 
-  if (result.isErr()) {
-    return rejectWithValue(result.error);
+  if (R.isError(result)) {
+    return rejectWithValue(result._0);
   }
 
-  const { data, meta } = result.value.data;
+  const { data, meta } = result._0.data;
 
   return { data, meta };
 });
@@ -56,8 +58,8 @@ export const deleteTrack = createAsyncThunk<
 >('tracks/deleteOne', async (id, { rejectWithValue }) => {
   const result = await safeApi<TTrack>(api.delete<TTrack>(`/api/tracks/${id}`));
 
-  if (result.isErr()) {
-    return rejectWithValue(result.error);
+  if (R.isError(result)) {
+    return rejectWithValue(result._0);
   }
 
   return id;
@@ -73,11 +75,11 @@ export const editTrack = createAsyncThunk<
     TrackResponseSchema
   );
 
-  if (result.isErr()) {
-    return rejectWithValue(result.error);
+  if (R.isError(result)) {
+    return rejectWithValue(result._0);
   }
 
-  return result.value.data;
+  return result._0.data;
 });
 
 export const uploadTrackFile = createAsyncThunk<
@@ -94,11 +96,11 @@ export const uploadTrackFile = createAsyncThunk<
     })
   );
 
-  if (result.isErr()) {
-    return rejectWithValue(result.error);
+  if (R.isError(result)) {
+    return rejectWithValue(result._0);
   }
 
-  return result.value.data;
+  return result._0.data;
 });
 
 export const deleteTrackFile = createAsyncThunk<
@@ -111,11 +113,11 @@ export const deleteTrackFile = createAsyncThunk<
     TrackResponseSchema
   );
 
-  if (result.isErr()) {
-    return rejectWithValue(result.error);
+  if (R.isError(result)) {
+    return rejectWithValue(result._0);
   }
 
-  return result.value.data;
+  return result._0.data;
 });
 
 export const setActiveTrack = createAsyncThunk<TTrack, TTrack>(
@@ -132,8 +134,8 @@ export const bulkDeleteTracks = createAsyncThunk<
     api.post<TTrack[]>('/api/tracks/delete', { ids })
   );
 
-  if (result.isErr()) {
-    return rejectWithValue(result.error);
+  if (R.isError(result)) {
+    return rejectWithValue(result._0);
   }
 
   return ids;

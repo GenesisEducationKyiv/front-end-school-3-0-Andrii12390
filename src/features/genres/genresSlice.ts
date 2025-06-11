@@ -2,11 +2,12 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { fetchGenres } from './genresThunk';
 import { type RootState } from '@/app/store';
 import { type ApiError } from '@/types';
+import { type Option } from '@mobily/ts-belt';
 
 interface GenresState {
   genres: string[];
   loading: boolean;
-  error: ApiError | null;
+  error: Option<ApiError>;
 }
 
 const initialState: GenresState = {

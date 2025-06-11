@@ -1,30 +1,29 @@
-import {
-  initialState,
-  type FiltersState,
-} from '@/features/filters/filtersSlice';
+import { type FiltersState } from '@/features/filters/filtersSlice';
 import { FiltersQuerySchema } from '../schemas';
+import { pipe, D, O } from '@mobily/ts-belt';
 
 export const buildQueryParams = (filters: FiltersState): string => {
-  const params = new URLSearchParams();
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (
-      value !== null &&
-      value !== undefined &&
-      value !== initialState[key as keyof FiltersState]
-    ) {
-      params.set(key, value.toString());
-    }
-  });
-
-  return params.toString();
+  return pipe(
+    filters,
+    D.filterWithKey(
+      (_key, val) => val != null && String(val) !== '' && _key !== 'limit'
+    ),
+    D.mapWithKey((_, val) => String(val)),
+    (pairs) => new URLSearchParams(pairs).toString()
+  );
 };
 
 export function parseQueryParams(): Partial<FiltersState> {
   const raw = Object.fromEntries(new URLSearchParams(window.location.search));
   const parsed = FiltersQuerySchema.safeParse(raw);
 
-  return parsed.success ? parsed.data : {};
+  return pipe(
+    O.fromNullable(parsed.success ? parsed.data : null),
+    O.match(
+      (data) => data,
+      () => ({})
+    )
+  );
 }
 
 export const validateAudioFile = (file: File): string | null => {
