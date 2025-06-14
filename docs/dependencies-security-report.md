@@ -39,6 +39,17 @@ Done in 0.69s.
 
 ---
 
+### `snyk test` Results
+
+To further validate the security of the dependencies, a scan was performed using [Snyk](https://snyk.io).
+
+```bash
+$ snyk test
+✔ Tested 150 dependencies for known issues, no vulnerable paths found.
+```
+
+> **Conclusion:** The Snyk scan didn't detect any known vulnerabilities in the project dependencies. 
+
 ### Dependency Analysis
 
 | Package                    | Version   | Maintainer                | Last Commit   | Weekly Downloads     | Zero‑day vulnerabilities |
