@@ -52,14 +52,14 @@ $ snyk test
 
 ### Dependency Analysis
 
-| Package                    | Version   | Maintainer                | Last Commit   | Weekly Downloads     | Zero‑day vulnerabilities |
+| Package                    | Version   | Maintainer                | Last Commit   | Weekly Downloads     | Known CVE (any version)  |
 | -------------------------- | --------- | ------------------------- | ------------- | -------------------- | ------------------------ |
 | @hookform/resolvers        | ^5.0.1    | react-hook-form authors   | 2024-12-01    | 8,222,628            | -                        |
 | @mobily/ts-belt            | ^3.13.1   | Mobily Team               | 2025-05-10    | 128,566              | -                        |
 | @radix-ui/react-* (6 pkgs) | ^1–2.x    | Radix UI Team             | 2025-05-05    | ~63,000,000 total    | -                        |
 | @reduxjs/toolkit           | ^2.7.0    | Redux Maintainers         | 2025-06-01    | 4,692,904            | -                        |
 | @tailwindcss/vite          | ^4.1.4    | Tailwind Labs             | 2024-11-10    | 2,009,092            | -                        |
-| axios                      | ^1.8.4    | axios contributors        | 2025-05-15    | 62,959,638           | CVE-2023 (High)          |
+| axios                      | ^1.8.4    | axios contributors        | 2025-05-15    | 62,959,638           | +                        |
 | class-variance-authority   | ^0.7.1    | Class Variance Authority  | 2023-11-01    | 7,334,006            | -                        |
 | clsx                       | ^2.1.1    | JJV                       | 2025-04-02    | 1,500,000            | -                        |
 | lucide-react               | ^0.501.0  | Lucide Team               | 2025-05-20    | 7,997,168            | -                        |
@@ -68,7 +68,7 @@ $ snyk test
 | react-dom                  | ^19.0.0   | Meta                      | 2025-05-30    | 37,385,603           | -                        |
 | react-hook-form            | ^7.56.0   | react-hook-form authors   | 2025-06-05    | 11,552,147           | -                        |
 | react-redux                | ^9.2.0    | Redux Maintainers         | 2025-06-03    | 9,390,831            | -                        |
-| react-router-dom           | ^7.5.1    | Remix / React Router Team | 2025-05-25    | 15,019,059           | CVE-2024 (Medium)        |
+| react-router-dom           | ^7.5.1    | Remix / React Router Team | 2025-05-25    | 15,019,059           | +                        |
 | sonner                     | ^2.0.3    | toast-ui authors          | 2024-02-10    | 4,944,742            | -                        |
 | tailwind-merge             | ^3.2.0    | Tailwind Labs             | 2025-03-30    | 10,159,013           | -                        |
 | tailwindcss                | ^4.1.4    | Tailwind Labs             | 2025-05-12    | 20,317,695           | -                        |
@@ -77,14 +77,17 @@ $ snyk test
 
 ---
 
-> **Summary:** Among all packages, only `axios` and `react-router-dom` have known CVE. `tailwindcss-animated` is the least popular package.
+"+": CVEs were found for this package in any version (not necessarily the current one)  
+"-": No known CVEs found for this package
+
+> **Summary:** The fact that packages like axios and react-router-dom have had known CVEs in the past suggests that they may have potential zero-day vulnerabilities. `tailwindcss-animated` is the least popular package.
 
 ---
 
 ### DevDependencies Analysis
 
-| Package                           | Version      | Maintainer           | Last Commit   | Weekly Downloads     | Zero‑day vulnerabilities |
-| --------------------------------- | -----------  | -------------------- | ------------- | -------------------- | ----------------------   |
+| Package                           | Version      | Maintainer           | Last Commit   | Weekly Downloads     | Known CVE (any version)  |
+| --------------------------------- | -----------  | -------------------- | ------------- | -------------------- | ------------------------ |
 | @eslint/js                        | ^9.22.0      | ESLint Team          | 2025-05-30    | 43,519,292           | -                        |
 | @types/node                       | ^22.14.1     | DefinitelyTyped      | 2025-05-20    | 150,177,768          | -                        |
 | @types/react, @types/react-dom    | ^19.x        | DefinitelyTyped      | 2025-05-22    | 39,376,534           | -                        |
@@ -93,10 +96,11 @@ $ snyk test
 | globals                           | ^16.0.0      | Bohemian Coding      | 2025-01-10    | 137,479,683          | -                        |
 | typescript                        | ^5.7.x       | Microsoft            | 2025-06-10    | 84,641,116           | -                        |
 | typescript-eslint                 | ^8.26.1      | TS-ESLint            | 2025-06-10    | 11,646,234           | -                        |
-| vite                              | ^6.3.1       | Vite Team            | 2025-05-15    | 28,018,295           | -                        |
+| vite                              | ^6.3.1       | Vite Team            | 2025-05-15    | 28,018,295           | +                        |
 
 ---
 
+> **Summary:** a history of CVEs in `vite` may indicate a non-zero risk of potential zero-day vulnurabilities
 ### Package Replacement Recommendation
 
 Most packages are popular and have a stable development history. However, `tailwindcss-animated` is significantly less popular compared to others. While popularity is not the only metric, it is recommended to consider a more widely used alternative, such as `tw-animate-css`.
@@ -130,7 +134,7 @@ yarn add tw-animate-css
 ### Summary
 
 * **Yarn Audit:** no known vulnerabilities found;
-* **CVEs detected:** `axios` (High), `react-router-dom` (Medium);
+* **CVEs detected:** `axios`, `react-router-dom`, `vite`;
 * **Zero‑day vulnerabilities:** not detected;
 * **Least popular package:** `tailwindcss-animated`;
 * **Recommendation:** replace `tailwindcss-animated` with `tw-animate-css`.
