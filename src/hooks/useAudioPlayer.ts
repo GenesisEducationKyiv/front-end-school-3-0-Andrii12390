@@ -8,7 +8,7 @@ import {
 import { type TTrack } from '@/lib/schemas';
 import { type Option } from '@mobily/ts-belt';
 
-interface IAudioState {
+export interface IAudioState {
   isPlaying: boolean;
   progress: number;
   currentTime: number;

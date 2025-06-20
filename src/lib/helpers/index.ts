@@ -6,15 +6,15 @@ export const buildQueryParams = (filters: FiltersState): string => {
   return pipe(
     filters,
     D.filterWithKey(
-      (_key, val) => val != null && String(val) !== '' && _key !== 'limit'
+      (_key, val) => val != null && String(val) !== ''
     ),
     D.mapWithKey((_, val) => String(val)),
     (pairs) => new URLSearchParams(pairs).toString()
   );
 };
 
-export function parseQueryParams(): Partial<FiltersState> {
-  const raw = Object.fromEntries(new URLSearchParams(window.location.search));
+export function parseQueryParams(queryString: string): Partial<FiltersState> {
+  const raw = Object.fromEntries(new URLSearchParams(queryString));
   const parsed = FiltersQuerySchema.safeParse(raw);
 
   return pipe(
