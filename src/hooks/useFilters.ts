@@ -17,7 +17,7 @@ import { O, pipe, type Option } from '@mobily/ts-belt';
 export const useFilters = () => {
   const dispatch = useAppDispatch();
   const storedFilters = useAppSelector(selectFilters);
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [localFilters, setLocalFilters] = useState<FiltersState>(storedFilters);
   const debouncedSearch = useDebounce(localFilters.search, 500);
   const isInitialized = useRef(false);
@@ -26,7 +26,7 @@ export const useFilters = () => {
   useEffect(() => {
     if (!isInitialized.current) {
       const merged = pipe(
-        parseQueryParams(),
+        parseQueryParams(searchParams.toString()),
         O.fromNullable,
         O.map((queryParams) => ({ ...storedFilters, ...queryParams })),
         O.getWithDefault(storedFilters)

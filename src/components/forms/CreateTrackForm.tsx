@@ -48,7 +48,7 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
   return (
     <FormDialog isOpen={isOpen} title='Create Track' onClose={handleClose}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4' data-testid='create-track-form'>
           <TextInputField
             name='title'
             label='Title'
