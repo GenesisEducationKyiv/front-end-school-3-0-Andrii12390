@@ -54,15 +54,23 @@ describe('AudioPlayer tests', () => {
     vi.clearAllMocks();
   });
 
-  it('Shows play button, progress 25 % and correct time', () => {
+it('Shows play button', () => {
     setup({ progress: 25, currentTime: 12, duration: 48 });
-
     expect(screen.getByTestId('play-button-id')).toBeInTheDocument();
-    expect(
-      screen.getByTestId('audio-progress-id').firstElementChild
-    ).toHaveStyle({ width: '25%' });
+  });
 
+  it('Shows correct progress', () => {
+    setup({ progress: 25, currentTime: 12, duration: 48 });
+    expect(screen.getByTestId('audio-progress-id').firstElementChild).toHaveStyle({ width: '25%' });
+  });
+
+  it('Shows correct current time', () => {
+    setup({ progress: 25, currentTime: 12, duration: 48 });
     expect(screen.getByText('0:12')).toBeInTheDocument();
+  });
+
+  it('Shows correct duration', () => {
+    setup({ progress: 25, currentTime: 12, duration: 48 });
     expect(screen.getByText('0:48')).toBeInTheDocument();
   });
 
