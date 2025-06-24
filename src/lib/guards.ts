@@ -1,4 +1,4 @@
-import type { TField, TOrder } from '@/features/filters/filtersSlice';
+import type { TField, TOrder } from '@/store/useFiltersStore';
 import type { ApiError } from '@/types';
 
 export const isTField = (value: string): value is TField => {

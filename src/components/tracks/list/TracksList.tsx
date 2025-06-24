@@ -1,23 +1,18 @@
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import TrackItem from '../item/TrackItem';
 import TrackListSkeleton from './TracksSkeleton';
-import { selectTracks } from '@/features/tracks/tracksSlice';
-import { fetchGenres } from '@/features/genres/genresThunk';
-import { fetchTracks } from '@/features/tracks/trackThunks';
-import { customToast } from '../../ui/toasts';
-import { selectFilters } from '@/features/filters/filtersSlice';
 import { type TTrack } from '@/lib/schemas';
-import { type ApiError } from '@/types';
 import { EditTrackForm } from '@/components/forms';
 import { type Option } from '@mobily/ts-belt';
+import { useTrackStore } from '@/store/useTracksStore';
 
-function TrackList() {
-  const { tracks, isLoading } = useAppSelector(selectTracks);
+interface ITrackList {
+  tracks?: TTrack[];
+  isLoading: boolean;
+}
 
-  const dispatch = useAppDispatch();
-
-  const filters = useAppSelector(selectFilters);
+function TrackList({ tracks, isLoading }: ITrackList) {
+  const selectedIds = useTrackStore(state => state.selectedIds);
 
   const [trackToEdit, setTrackToEdit] = useState<Option<TTrack>>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -26,25 +21,6 @@ function TrackList() {
     setTrackToEdit(() => track);
     setIsEditModalOpen(true);
   };
-
-  useEffect(() => {
-    dispatch(fetchTracks()).then(result => {
-      if (fetchTracks.rejected.match(result)) {
-        const err = result.payload ?? {
-          message: 'Failed to fetch tracks',
-        };
-        customToast.error(err.message);
-      }
-    });
-  }, [dispatch, filters]);
-
-  useEffect(() => {
-    dispatch(fetchGenres())
-      .unwrap()
-      .catch((err: ApiError) => {
-        customToast.error(`Fetch failed: ${err.message}`);
-      });
-  }, [dispatch]);
 
   const handleCloseModal = () => {
     setIsEditModalOpen(false);
@@ -64,13 +40,15 @@ function TrackList() {
           <TrackListSkeleton />
         ) : (
           <ul className="px-2">
-            {tracks.map(track => (
-              <TrackItem
-                key={track.id}
-                track={track}
-                handleEdit={handleEditTrack}
-              />
-            ))}
+            {tracks &&
+              tracks.map(track => (
+                <TrackItem
+                  key={track.id}
+                  track={track}
+                  isChecked={selectedIds.includes(track.id)}
+                  handleEdit={handleEditTrack}
+                />
+              ))}
           </ul>
         )}
       </div>

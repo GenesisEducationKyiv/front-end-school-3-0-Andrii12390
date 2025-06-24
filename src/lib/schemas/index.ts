@@ -14,7 +14,7 @@ export const TrackFormSchema = z.object({
   genres: z.array(z.string()).min(1, 'Select at least one genre'),
 });
 
-export const genresResponseSchema = z.array(z.string());
+export const GenresResponseSchema = z.array(z.string());
 
 export const TrackResponseSchema = z.object({
   id: z.string().nonempty(),
@@ -24,6 +24,7 @@ export const TrackResponseSchema = z.object({
   genres: z.array(z.string()),
   slug: z.string().nonempty(),
   coverImage: z.string().optional(),
+  audioFile: z.string().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 });
@@ -56,8 +57,6 @@ export const FiltersQuerySchema = z.object({
   ),
 });
 
-export type TTrack = z.infer<typeof TrackResponseSchema> & {
-  audioFile?: string;
-};
+export type TTrack = z.infer<typeof TrackResponseSchema>;
 export type TMetaData = z.infer<typeof TrackMetadataResponse>;
 export type TTrackForm = z.infer<typeof TrackFormSchema>;

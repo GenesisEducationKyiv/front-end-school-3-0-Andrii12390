@@ -23,7 +23,9 @@ function AudioPlayer({ track }: IAudioPlayerProps) {
     duration,
     togglePlay,
     handleSeek,
-    onEnded,
+    onLoadedMetadata,
+    onTimeUpdate,
+    handleEnded,
   } = useAudioPlayer(track);
 
   return (
@@ -67,7 +69,9 @@ function AudioPlayer({ track }: IAudioPlayerProps) {
       {track?.audioFile && (
         <audio
           ref={audioRef}
-          onEnded={() => onEnded()}
+          onLoadedMetadata={onLoadedMetadata}
+          onTimeUpdate={onTimeUpdate}
+          onEnded={handleEnded}
         >
           <source
             src={`${API_URL}/api/files/${track.audioFile}`}

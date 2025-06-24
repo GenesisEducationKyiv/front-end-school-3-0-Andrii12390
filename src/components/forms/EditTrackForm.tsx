@@ -1,7 +1,5 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { editTrack } from '@/features/tracks/trackThunks';
 
 import { Form, FormField } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -11,9 +9,8 @@ import GenreSelector from './GenreSelector';
 import FormDialog from '../common/FormDialog';
 
 import { TrackFormSchema, type TTrack, type TTrackForm } from '@/lib/schemas';
-import { customToast } from '../ui/toasts';
-import { selectGenres } from '@/features/genres/genresSlice';
-import { selectTracks } from '@/features/tracks/tracksSlice';
+import { useEditTrack } from '@/api/tracks/hooks';
+import { useGenres } from '@/api/genres/hooks';
 
 interface IEditTrackForm {
   track: TTrack;
@@ -22,10 +19,8 @@ interface IEditTrackForm {
 }
 
 function EditTrackForm({ track, isOpen, handleClose }: IEditTrackForm) {
-  const dispatch = useAppDispatch();
-
-  const { genres } = useAppSelector(selectGenres);
-  const { isLoading } = useAppSelector(selectTracks);
+  const { mutate, isPending } = useEditTrack();
+  const { data: genres = [] } = useGenres();
 
   const form = useForm<TTrackForm>({
     resolver: zodResolver(TrackFormSchema),
@@ -39,15 +34,7 @@ function EditTrackForm({ track, isOpen, handleClose }: IEditTrackForm) {
   });
 
   const onSubmit = (values: TTrackForm) => {
-    dispatch(editTrack({ ...values, id: track.id })).then(result => {
-      if (editTrack.rejected.match(result)) {
-        const err = result.payload ?? {
-          message: 'Unknown error',
-        };
-        return customToast.error(err.message);
-      }
-      customToast.success('Track updated successfully');
-    });
+    mutate(values);
   };
 
   return (
@@ -100,11 +87,11 @@ function EditTrackForm({ track, isOpen, handleClose }: IEditTrackForm) {
 
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             data-testid="submit-button"
             className="active:scale-95"
           >
-            {isLoading ? 'Saving...' : 'Update'}
+            {isPending ? 'Saving...' : 'Update'}
           </Button>
         </form>
       </Form>
