@@ -45,7 +45,7 @@ function Filters({ isOpen, setIsOpen }: ITrackFilters) {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant='outline' className='h-9 bg-button mr-3'>
+        <Button variant='outline' className='h-9 bg-button mr-3' data-testid="open-filters-button">
           <Filter /> <span>Filters</span>
         </Button>
       </SheetTrigger>
@@ -56,7 +56,7 @@ function Filters({ isOpen, setIsOpen }: ITrackFilters) {
           </SheetTitle>
         </SheetHeader>
 
-        <div className='flex flex-col gap-4 mt-4 p-10'>
+        <div className='flex flex-col gap-4 mt-4 p-10' data-testid="filters-menu">
           <Select
             value={filters.sort || ''}
             onValueChange={handleSortFieldChange}
