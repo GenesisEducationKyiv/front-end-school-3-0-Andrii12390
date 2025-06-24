@@ -2,8 +2,7 @@ import { describe, it, beforeEach, vi, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import Pagination from '../Pagination'; 
-
+import Pagination from '../Pagination';
 
 let currPage = 1;
 let totalPages = 1;
@@ -19,12 +18,11 @@ vi.mock('@/hooks/useFilters', () => ({
 }));
 
 vi.mock('@/app/hooks', () => ({
-  useAppSelector:
-    () =>
-      ({
-        isLoading,
-        meta: { totalPages },
-      }) satisfies { isLoading: boolean; meta: { totalPages: number } },
+  useAppSelector: () =>
+    ({
+      isLoading,
+      meta: { totalPages },
+    }) satisfies { isLoading: boolean; meta: { totalPages: number } },
 }));
 
 describe('Pagination component integration tests', () => {

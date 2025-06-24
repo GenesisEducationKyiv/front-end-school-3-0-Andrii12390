@@ -35,7 +35,7 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
   });
 
   const onSubmit = (values: TTrackForm) => {
-    dispatch(createTrack(values)).then((result) => {
+    dispatch(createTrack(values)).then(result => {
       if (createTrack.fulfilled.match(result)) {
         customToast.success('Track created successfully');
       } else {
@@ -46,37 +46,45 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
   };
 
   return (
-    <FormDialog isOpen={isOpen} title='Create Track' onClose={handleClose}>
+    <FormDialog
+      isOpen={isOpen}
+      title="Create Track"
+      onClose={handleClose}
+    >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4' data-testid='create-track-form'>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+          data-testid="create-track-form"
+        >
           <TextInputField
-            name='title'
-            label='Title'
-            testId='input-title'
+            name="title"
+            label="Title"
+            testId="input-title"
             control={form.control}
           />
           <TextInputField
-            name='artist'
-            label='Artist'
-            testId='input-artist'
+            name="artist"
+            label="Artist"
+            testId="input-artist"
             control={form.control}
           />
           <TextInputField
-            name='album'
-            label='Album'
-            testId='input-album'
+            name="album"
+            label="Album"
+            testId="input-album"
             control={form.control}
           />
           <TextInputField
-            name='coverImage'
-            label='Cover Image URL'
-            testId='input-cover-image'
+            name="coverImage"
+            label="Cover Image URL"
+            testId="input-cover-image"
             control={form.control}
           />
 
           <FormField
             control={form.control}
-            name='genres'
+            name="genres"
             render={({ field }) => (
               <GenreSelector
                 genres={genres}
@@ -87,10 +95,10 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
           />
 
           <Button
-            type='submit'
+            type="submit"
             disabled={isLoading}
-            data-testid='submit-button'
-            className='active:scale-95'
+            data-testid="submit-button"
+            className="active:scale-95"
           >
             {isLoading ? 'Saving...' : 'Create'}
           </Button>

@@ -27,17 +27,18 @@ function TrackDeleteDialog({
 }: ITrackDeleteDialogProps) {
   return (
     <>
-      <AlertDialog open={isFileDeleteOpen} onOpenChange={setIsFileDeleteOpen}>
-        <AlertDialogContent data-testid='confirm-dialog'>
+      <AlertDialog
+        open={isFileDeleteOpen}
+        onOpenChange={setIsFileDeleteOpen}
+      >
+        <AlertDialogContent data-testid="confirm-dialog">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete file from this track?</AlertDialogTitle>
           </AlertDialogHeader>
-          <AlertDialogFooter className='flex justify-between'>
-            <AlertDialogCancel data-testid='cancel-delete'>
-              Cancel
-            </AlertDialogCancel>
+          <AlertDialogFooter className="flex justify-between">
+            <AlertDialogCancel data-testid="cancel-delete">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              data-testid='confirm-delete'
+              data-testid="confirm-delete"
               onClick={onDeleteFile}
             >
               Delete File
@@ -46,19 +47,18 @@ function TrackDeleteDialog({
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={isTrackDeleteOpen} onOpenChange={setIsTrackDeleteOpen}>
-        <AlertDialogContent data-testid='confirm-dialog'>
+      <AlertDialog
+        open={isTrackDeleteOpen}
+        onOpenChange={setIsTrackDeleteOpen}
+      >
+        <AlertDialogContent data-testid="confirm-dialog">
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to delete this track?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Are you sure you want to delete this track?</AlertDialogTitle>
           </AlertDialogHeader>
-          <AlertDialogFooter className='flex justify-between'>
-            <AlertDialogCancel data-testid='cancel-delete'>
-              Cancel
-            </AlertDialogCancel>
+          <AlertDialogFooter className="flex justify-between">
+            <AlertDialogCancel data-testid="cancel-delete">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              data-testid='confirm-delete'
+              data-testid="confirm-delete"
               onClick={onDeleteTrack}
             >
               Delete Track

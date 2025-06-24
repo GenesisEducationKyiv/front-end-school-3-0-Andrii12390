@@ -16,10 +16,7 @@ export const createTrack = createAsyncThunk<
   Omit<TTrack, 'id' | 'slug'>,
   { rejectValue: ApiError }
 >('tracks/create', async (data, { rejectWithValue }) => {
-  const result = await safeApi<TTrack>(
-    api.post<TTrack>('/api/tracks', data),
-    TrackResponseSchema
-  );
+  const result = await safeApi<TTrack>(api.post<TTrack>('/api/tracks', data), TrackResponseSchema);
 
   if (R.isError(result)) {
     return rejectWithValue(result._0);
@@ -39,7 +36,7 @@ export const fetchTracks = createAsyncThunk<
 
   const result = await safeApi<{ data: TTrack[]; meta: TMetaData }>(
     api.get<{ data: TTrack[]; meta: TMetaData }>(`/api/tracks?${queryString}`),
-    TrackListResponseSchema
+    TrackListResponseSchema,
   );
 
   if (R.isError(result)) {
@@ -51,36 +48,34 @@ export const fetchTracks = createAsyncThunk<
   return { data, meta };
 });
 
-export const deleteTrack = createAsyncThunk<
-  string,
-  string,
-  { rejectValue: ApiError }
->('tracks/deleteOne', async (id, { rejectWithValue }) => {
-  const result = await safeApi<TTrack>(api.delete<TTrack>(`/api/tracks/${id}`));
+export const deleteTrack = createAsyncThunk<string, string, { rejectValue: ApiError }>(
+  'tracks/deleteOne',
+  async (id, { rejectWithValue }) => {
+    const result = await safeApi<TTrack>(api.delete<TTrack>(`/api/tracks/${id}`));
 
-  if (R.isError(result)) {
-    return rejectWithValue(result._0);
-  }
+    if (R.isError(result)) {
+      return rejectWithValue(result._0);
+    }
 
-  return id;
-});
+    return id;
+  },
+);
 
-export const editTrack = createAsyncThunk<
-  TTrack,
-  Omit<TTrack, 'slug'>,
-  { rejectValue: ApiError }
->('tracks/edit', async (data, { rejectWithValue }) => {
-  const result = await safeApi<TTrack>(
-    api.put<TTrack>(`/api/tracks/${data.id}`, data),
-    TrackResponseSchema
-  );
+export const editTrack = createAsyncThunk<TTrack, Omit<TTrack, 'slug'>, { rejectValue: ApiError }>(
+  'tracks/edit',
+  async (data, { rejectWithValue }) => {
+    const result = await safeApi<TTrack>(
+      api.put<TTrack>(`/api/tracks/${data.id}`, data),
+      TrackResponseSchema,
+    );
 
-  if (R.isError(result)) {
-    return rejectWithValue(result._0);
-  }
+    if (R.isError(result)) {
+      return rejectWithValue(result._0);
+    }
 
-  return result._0.data;
-});
+    return result._0.data;
+  },
+);
 
 export const uploadTrackFile = createAsyncThunk<
   TTrack,
@@ -93,7 +88,7 @@ export const uploadTrackFile = createAsyncThunk<
   const result = await safeApi<TTrack>(
     api.post<TTrack>(`/api/tracks/${id}/upload`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    }),
   );
 
   if (R.isError(result)) {
@@ -103,40 +98,36 @@ export const uploadTrackFile = createAsyncThunk<
   return result._0.data;
 });
 
-export const deleteTrackFile = createAsyncThunk<
-  TTrack,
-  string,
-  { rejectValue: ApiError }
->('tracks/deleteFile', async (id, { rejectWithValue }) => {
-  const result = await safeApi<TTrack>(
-    api.delete<TTrack>(`/api/tracks/${id}/file`),
-    TrackResponseSchema
-  );
+export const deleteTrackFile = createAsyncThunk<TTrack, string, { rejectValue: ApiError }>(
+  'tracks/deleteFile',
+  async (id, { rejectWithValue }) => {
+    const result = await safeApi<TTrack>(
+      api.delete<TTrack>(`/api/tracks/${id}/file`),
+      TrackResponseSchema,
+    );
 
-  if (R.isError(result)) {
-    return rejectWithValue(result._0);
-  }
+    if (R.isError(result)) {
+      return rejectWithValue(result._0);
+    }
 
-  return result._0.data;
-});
+    return result._0.data;
+  },
+);
 
 export const setActiveTrack = createAsyncThunk<TTrack, TTrack>(
   'tracks/setActiveTrack',
-  async (track) => track
+  async track => track,
 );
 
-export const bulkDeleteTracks = createAsyncThunk<
-  string[],
-  string[],
-  { rejectValue: ApiError }
->('tracks/bulkDelete', async (ids, { rejectWithValue }) => {
-  const result = await safeApi<TTrack[]>(
-    api.post<TTrack[]>('/api/tracks/delete', { ids })
-  );
+export const bulkDeleteTracks = createAsyncThunk<string[], string[], { rejectValue: ApiError }>(
+  'tracks/bulkDelete',
+  async (ids, { rejectWithValue }) => {
+    const result = await safeApi<TTrack[]>(api.post<TTrack[]>('/api/tracks/delete', { ids }));
 
-  if (R.isError(result)) {
-    return rejectWithValue(result._0);
-  }
+    if (R.isError(result)) {
+      return rejectWithValue(result._0);
+    }
 
-  return ids;
-});
+    return ids;
+  },
+);

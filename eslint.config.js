@@ -34,5 +34,5 @@ export default tseslint.config(
       ...react.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
     },
-  }
+  },
 );

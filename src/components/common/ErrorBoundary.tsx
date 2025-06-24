@@ -9,9 +9,7 @@ function ErrorBoundary() {
 
   useEffect(() => {
     if (error) {
-      customToast.error(
-        `Error: ${error instanceof Error ? error.message : error}`
-      );
+      customToast.error(`Error: ${error instanceof Error ? error.message : error}`);
     }
 
     navigate(ROUTES.HOME);

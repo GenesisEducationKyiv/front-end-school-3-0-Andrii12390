@@ -7,7 +7,7 @@ export const store = configureStore({
   reducer: {
     tracks: tracksReducer,
     genres: genresReducer,
-    filters: filterReducer
+    filters: filterReducer,
   },
 });
 

@@ -6,11 +6,7 @@ import {
   setActiveTrack,
   deleteTrackFile,
 } from '@/features/tracks/trackThunks';
-import {
-  selectTracks,
-  toggleSelectTrack,
-  togglePlayPause,
-} from '@/features/tracks/tracksSlice';
+import { selectTracks, toggleSelectTrack, togglePlayPause } from '@/features/tracks/tracksSlice';
 
 import { twMerge } from 'tailwind-merge';
 import { API_URL } from '@/lib/config';
@@ -37,7 +33,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
 
   const handleRemoveTrack = () => {
     dispatch(deleteTrack(track.id))
-      .then((result) => {
+      .then(result => {
         if (deleteTrack.rejected.match(result)) {
           const err = result.payload ?? {
             message: 'Unknown error',
@@ -68,7 +64,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
 
   const handleRemoveFile = () => {
     dispatch(deleteTrackFile(track.id))
-      .then((result) => {
+      .then(result => {
         if (deleteTrackFile.rejected.match(result)) {
           const err = result.payload ?? {
             message: 'Unknown error',
@@ -89,7 +85,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
       return customToast.error(errorMessage);
     }
 
-    dispatch(uploadTrackFile({ id: track.id, file })).then((result) => {
+    dispatch(uploadTrackFile({ id: track.id, file })).then(result => {
       if (uploadTrackFile.rejected.match(result)) {
         const err = result.payload ?? { message: 'Unknown error' };
         customToast.error(err.message);
@@ -126,7 +122,7 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
           'hover:bg-slate-700/20',
           track.id === activeTrack?.id && activeTrack.audioFile
             ? 'ring-1 ring-primary/30 bg-slate-700/20'
-            : ''
+            : '',
         )}
       >
         <TrackInfo
@@ -136,8 +132,8 @@ function TrackItem({ track, handleEdit }: ITrackItemProps) {
           trackId={track.id}
         />
 
-        <section className='flex items-center gap-4'>
-          <span className='text-sm'>{formatTime(duration!)}</span>
+        <section className="flex items-center gap-4">
+          <span className="text-sm">{formatTime(duration!)}</span>
           <TrackActions
             track={track}
             isChecked={selectedIds.includes(track.id)}

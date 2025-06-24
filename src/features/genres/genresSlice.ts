@@ -20,18 +20,15 @@ const genresSlice = createSlice({
   name: 'genres',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchGenres.pending, (state) => {
+      .addCase(fetchGenres.pending, state => {
         state.loading = true;
       })
-      .addCase(
-        fetchGenres.fulfilled,
-        (state, action: PayloadAction<string[]>) => {
-          state.genres = action.payload;
-          state.loading = false;
-        }
-      )
+      .addCase(fetchGenres.fulfilled, (state, action: PayloadAction<string[]>) => {
+        state.genres = action.payload;
+        state.loading = false;
+      })
       .addCase(fetchGenres.rejected, (state, action) => {
         state.loading = false;
 

@@ -28,8 +28,8 @@ export const useFilters = () => {
       const merged = pipe(
         parseQueryParams(searchParams.toString()),
         O.fromNullable,
-        O.map((queryParams) => ({ ...storedFilters, ...queryParams })),
-        O.getWithDefault(storedFilters)
+        O.map(queryParams => ({ ...storedFilters, ...queryParams })),
+        O.getWithDefault(storedFilters),
       );
 
       dispatch(setFilters(merged));
@@ -63,18 +63,11 @@ export const useFilters = () => {
     setLocalFilters(storedFilters);
   }, [storedFilters]);
 
-  const updateLocalFilter = <K extends keyof FiltersState>(
-    key: K,
-    value: FiltersState[K]
-  ) => {
+  const updateLocalFilter = <K extends keyof FiltersState>(key: K, value: FiltersState[K]) => {
     const resetPage = (filters: FiltersState) =>
       key === 'page' || key === 'search' ? filters : { ...filters, page: 1 };
 
-    const newFilters = pipe(
-      localFilters,
-      (filters) => ({ ...filters, [key]: value }),
-      resetPage
-    );
+    const newFilters = pipe(localFilters, filters => ({ ...filters, [key]: value }), resetPage);
 
     setLocalFilters(newFilters);
 
@@ -85,14 +78,14 @@ export const useFilters = () => {
   };
 
   const applyFilters = () => {
-    pipe(localFilters, (filters) => {
+    pipe(localFilters, filters => {
       dispatch(setFilters(filters));
       setSearchParams(buildQueryParams(filters));
     });
   };
 
   const resetLocalFilters = () => {
-    pipe({ ...initialFilters, page: 1 }, (filters) => {
+    pipe({ ...initialFilters, page: 1 }, filters => {
       setLocalFilters(filters);
       dispatch(resetFilters());
       setSearchParams({});

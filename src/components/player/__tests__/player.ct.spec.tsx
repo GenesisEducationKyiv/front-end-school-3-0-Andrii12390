@@ -4,7 +4,7 @@ import { describe, it, beforeEach, vi, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import AudioPlayer from '..';
-import { useAudioPlayer, IAudioState } from '@/hooks/useAudioPlayer'; 
+import { useAudioPlayer, IAudioState } from '@/hooks/useAudioPlayer';
 import { TTrack } from '@/lib/schemas';
 
 vi.mock('@/hooks/useAudioPlayer');
@@ -54,7 +54,7 @@ describe('AudioPlayer tests', () => {
     vi.clearAllMocks();
   });
 
-it('Shows play button', () => {
+  it('Shows play button', () => {
     setup({ progress: 25, currentTime: 12, duration: 48 });
     expect(screen.getByTestId('play-button-id')).toBeInTheDocument();
   });

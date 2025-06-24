@@ -16,9 +16,7 @@ const handleApiError = (error: unknown): ApiError => {
     const { response } = error;
     return {
       message:
-        response?.data &&
-        typeof response.data === 'object' &&
-        'error' in response.data
+        response?.data && typeof response.data === 'object' && 'error' in response.data
           ? String(response.data.error)
           : error.message,
       status: response?.status,
@@ -29,10 +27,7 @@ const handleApiError = (error: unknown): ApiError => {
   };
 };
 
-const parseResponseData = <T extends {}>(
-  data: T,
-  schema?: ZodSchema<T>
-): R.Result<T, ApiError> => {
+const parseResponseData = <T extends {}>(data: T, schema?: ZodSchema<T>): R.Result<T, ApiError> => {
   if (!schema) return R.Ok(data);
 
   const parsed = schema.safeParse(data);
@@ -46,19 +41,19 @@ const parseResponseData = <T extends {}>(
 
 export async function safeApi<T extends {}>(
   promise: Promise<AxiosResponse<T>>,
-  schema?: ZodSchema<T>
+  schema?: ZodSchema<T>,
 ): Promise<R.Result<ApiSuccess<T>, ApiError>> {
   return promise.then(
-    (res) => {
+    res => {
       const parsedRes = parseResponseData(res.data, schema);
 
-      return R.map(parsedRes, (parsedData) => ({
+      return R.map(parsedRes, parsedData => ({
         data: parsedData,
         status: res.status,
       }));
     },
-    (err) => {
+    err => {
       return R.Error(handleApiError(err));
-    }
+    },
   );
 }

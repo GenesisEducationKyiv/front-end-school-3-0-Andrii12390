@@ -10,9 +10,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <App />
-      <div data-testid='toast-container'>
+      <div data-testid="toast-container">
         <Toaster />
       </div>
     </Provider>
-  </StrictMode>
+  </StrictMode>,
 );

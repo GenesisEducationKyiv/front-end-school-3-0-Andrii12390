@@ -7,18 +7,18 @@ interface ITrackInfoProps {
 
 function TrackInfo({ coverImage, title, artist, trackId }: ITrackInfoProps) {
   return (
-    <section className='flex gap-4 items-center'>
+    <section className="flex gap-4 items-center">
       <img
         src={coverImage || './default-track.png'}
-        alt='Track cover image'
+        alt="Track cover image"
         width={50}
         height={50}
-        className='rounded-md'
+        className="rounded-md"
       />
       <section>
         <p
           data-testid={`track-item-${trackId}-title`}
-          className='font-semibold'
+          className="font-semibold"
         >
           {title}
         </p>

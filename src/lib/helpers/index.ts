@@ -5,11 +5,9 @@ import { pipe, D, O } from '@mobily/ts-belt';
 export const buildQueryParams = (filters: FiltersState): string => {
   return pipe(
     filters,
-    D.filterWithKey(
-      (_key, val) => val != null && String(val) !== ''
-    ),
+    D.filterWithKey((_key, val) => val != null && String(val) !== ''),
     D.mapWithKey((_, val) => String(val)),
-    (pairs) => new URLSearchParams(pairs).toString()
+    pairs => new URLSearchParams(pairs).toString(),
   );
 };
 
@@ -20,9 +18,9 @@ export function parseQueryParams(queryString: string): Partial<FiltersState> {
   return pipe(
     O.fromNullable(parsed.success ? parsed.data : null),
     O.match(
-      (data) => data,
-      () => ({})
-    )
+      data => data,
+      () => ({}),
+    ),
   );
 }
 

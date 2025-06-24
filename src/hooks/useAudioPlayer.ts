@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  playNextTrack,
-  selectTracks,
-  togglePlayPause,
-} from '@/features/tracks/tracksSlice';
+import { playNextTrack, selectTracks, togglePlayPause } from '@/features/tracks/tracksSlice';
 import { type TTrack } from '@/lib/schemas';
 import { type Option } from '@mobily/ts-belt';
 
@@ -35,7 +31,7 @@ export const useAudioPlayer = (track: Option<TTrack>) => {
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      setAudioState((prev) => ({
+      setAudioState(prev => ({
         ...prev,
         currentTime: audio.currentTime,
         duration: audio.duration,
@@ -52,7 +48,7 @@ export const useAudioPlayer = (track: Option<TTrack>) => {
 
     if (track?.audioFile && audio) {
       audio.load();
-      setAudioState((prev) => ({ ...prev, isPlaying: reduxIsPlaying }));
+      setAudioState(prev => ({ ...prev, isPlaying: reduxIsPlaying }));
     } else {
       setAudioState(initialState);
     }
@@ -68,7 +64,7 @@ export const useAudioPlayer = (track: Option<TTrack>) => {
       } else if (!reduxIsPlaying && !audio.paused) {
         audio.pause();
       }
-      setAudioState((prev) => ({ ...prev, isPlaying: reduxIsPlaying }));
+      setAudioState(prev => ({ ...prev, isPlaying: reduxIsPlaying }));
     };
 
     handlePlayPause();

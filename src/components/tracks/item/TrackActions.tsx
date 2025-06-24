@@ -41,8 +41,12 @@ function TrackActions({
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className='flex items-center'>
-      <Button variant='ghost' size='icon' onClick={onPlay}>
+    <div className="flex items-center">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onPlay}
+      >
         {activeTrack?.id === track.id && isPlaying ? (
           <Pause className={`${!track.audioFile && 'text-muted'} size-5`} />
         ) : (
@@ -52,29 +56,30 @@ function TrackActions({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant='ghost' size='icon'>
-            <MoreVertical className='size-5' />
+          <Button
+            variant="ghost"
+            size="icon"
+          >
+            <MoreVertical className="size-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          align='end'
-          className='bg-input-background border-2 border-border'
+          align="end"
+          className="bg-input-background border-2 border-border"
         >
           <DropdownMenuItem onClick={onEdit}>Edit Track</DropdownMenuItem>
 
           <DropdownMenuItem onClick={openModal}>Manage File</DropdownMenuItem>
 
-          <DropdownMenuItem onClick={onDeleteTrack}>
-            Delete Track
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onDeleteTrack}>Delete Track</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <Checkbox
         checked={isChecked}
-        className='size-5 ml-2'
+        className="size-5 ml-2"
         onCheckedChange={handleSelect}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       />
 
       <TrackFileDialog

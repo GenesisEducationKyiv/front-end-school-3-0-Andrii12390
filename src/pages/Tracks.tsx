@@ -9,11 +9,14 @@ function Tracks() {
   const { activeTrack } = useAppSelector(selectTracks);
 
   return (
-    <div className='text-foreground bg-background'>
-      <div className='pb-4 min-h-dvh flex flex-col'>
-        <section className='sticky pt-4 top-0 z-5 bg-background'>
-          <div className='container mx-auto px-2'>
-            <header data-testid='tracks-header' className='animate-fade-right'>
+    <div className="text-foreground bg-background">
+      <div className="pb-4 min-h-dvh flex flex-col">
+        <section className="sticky pt-4 top-0 z-5 bg-background">
+          <div className="container mx-auto px-2">
+            <header
+              data-testid="tracks-header"
+              className="animate-fade-right"
+            >
               <Logo />
             </header>
             <TrackToolbar />
@@ -22,8 +25,8 @@ function Tracks() {
 
         <TrackList />
 
-        <footer className='fixed bottom-0 left-0 py-3 w-full bg-background z-50'>
-          <div className='container mx-auto px-4 py-2'>
+        <footer className="fixed bottom-0 left-0 py-3 w-full bg-background z-50">
+          <div className="container mx-auto px-4 py-2">
             <AudioPlayer track={activeTrack} />
           </div>
         </footer>

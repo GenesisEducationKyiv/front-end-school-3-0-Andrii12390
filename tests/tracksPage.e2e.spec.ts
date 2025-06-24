@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { type TTrack } from "../src/lib/schemas"
+import { type TTrack } from '../src/lib/schemas';
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'http://localhost:3000';
 
 function getMockTracks(): TTrack[] {
   return [
@@ -31,17 +31,15 @@ const selectors = {
 test.beforeEach(async ({ page }) => {
   const mockTracks = getMockTracks();
 
-  await page.route('http://localhost:8000/api/tracks**', (route) => {
+  await page.route('http://localhost:8000/api/tracks**', route => {
     const method = route.request().method();
     const url = route.request().url();
-    
+
     if (method === 'GET') {
       const search = new URL(url).searchParams.get('search')?.toLowerCase();
       const filtered = search
-        ? mockTracks.filter((t) =>
-            [t.title, t.artist, t.album].some((v) =>
-              v?.toLowerCase().includes(search)
-            )
+        ? mockTracks.filter(t =>
+            [t.title, t.artist, t.album].some(v => v?.toLowerCase().includes(search)),
           )
         : mockTracks;
 
@@ -67,7 +65,7 @@ test('Load initial tracks', async ({ page }) => {
 
   await expect(page.locator(selectors.trackTitle(1))).toContainText('Track One');
   await expect(page.locator(selectors.trackArtist(1))).toContainText('Artist One');
-  
+
   await expect(page.locator(selectors.trackTitle(2))).toContainText('Track Two');
   await expect(page.locator(selectors.trackArtist(2))).toContainText('Artist Two');
 });
@@ -76,15 +74,15 @@ test('Open create track form', async ({ page }) => {
   await expect(page.getByTestId('create-track-button')).toBeVisible();
 
   await page.getByTestId('create-track-button').click();
-  
+
   await expect(page.getByTestId('create-track-form')).toBeVisible();
 });
 
 test('Open filters menu', async ({ page }) => {
   await expect(page.getByTestId('open-filters-button')).toBeVisible();
-  
+
   await page.getByTestId('open-filters-button').click();
-  
+
   await expect(page.getByTestId('filters-menu')).toBeVisible();
 });
 
@@ -94,7 +92,7 @@ test('Tracks selection', async ({ page }) => {
 
   await expect(page.getByTestId('bulk-delete-button')).toBeVisible();
   await expect(page.getByTestId('clear-selection-button')).toBeVisible();
-  
+
   await page.getByTestId('clear-selection-button').click();
 });
 
@@ -104,7 +102,7 @@ test('Search tracks by title', async ({ page }) => {
 
   await searchInput.fill('one');
   await expect(searchInput).toHaveValue('one');
-  
+
   await expect(page.locator('li[data-testid^="track-item-"]')).toHaveCount(1, {
     timeout: 10000,
   });

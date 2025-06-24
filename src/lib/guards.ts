@@ -10,7 +10,5 @@ export const isTOrder = (value: string): value is TOrder => {
 };
 
 export const isApiError = (payload: unknown): payload is ApiError => {
-  return (
-    typeof payload === 'object' && payload !== null && 'message' in payload
-  );
+  return typeof payload === 'object' && payload !== null && 'message' in payload;
 };

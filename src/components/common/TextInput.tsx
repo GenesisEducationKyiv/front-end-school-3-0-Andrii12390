@@ -1,11 +1,5 @@
 import { Input } from '@/components/ui/input';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Control, FieldValues, Path } from 'react-hook-form';
 
 interface ITextInputFieldProps<T extends FieldValues> {
@@ -28,8 +22,11 @@ function TextInputField<T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <FormControl className='bg-input-background'>
-            <Input data-testid={testId} {...field} />
+          <FormControl className="bg-input-background">
+            <Input
+              data-testid={testId}
+              {...field}
+            />
           </FormControl>
           <FormMessage data-testid={`error-${name}`} />
         </FormItem>

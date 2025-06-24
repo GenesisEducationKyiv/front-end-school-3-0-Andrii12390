@@ -39,7 +39,7 @@ function EditTrackForm({ track, isOpen, handleClose }: IEditTrackForm) {
   });
 
   const onSubmit = (values: TTrackForm) => {
-    dispatch(editTrack({ ...values, id: track.id })).then((result) => {
+    dispatch(editTrack({ ...values, id: track.id })).then(result => {
       if (editTrack.rejected.match(result)) {
         const err = result.payload ?? {
           message: 'Unknown error',
@@ -51,37 +51,44 @@ function EditTrackForm({ track, isOpen, handleClose }: IEditTrackForm) {
   };
 
   return (
-    <FormDialog isOpen={isOpen} title='Edit track' onClose={handleClose}>
+    <FormDialog
+      isOpen={isOpen}
+      title="Edit track"
+      onClose={handleClose}
+    >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <TextInputField
-            name='title'
-            label='Title'
-            testId='input-title'
+            name="title"
+            label="Title"
+            testId="input-title"
             control={form.control}
           />
           <TextInputField
-            name='artist'
-            label='Artist'
-            testId='input-artist'
+            name="artist"
+            label="Artist"
+            testId="input-artist"
             control={form.control}
           />
           <TextInputField
-            name='album'
-            label='Album'
-            testId='input-album'
+            name="album"
+            label="Album"
+            testId="input-album"
             control={form.control}
           />
           <TextInputField
-            name='coverImage'
-            label='Cover Image URL'
-            testId='input-cover-image'
+            name="coverImage"
+            label="Cover Image URL"
+            testId="input-cover-image"
             control={form.control}
           />
 
           <FormField
             control={form.control}
-            name='genres'
+            name="genres"
             render={({ field }) => (
               <GenreSelector
                 genres={genres}
@@ -92,10 +99,10 @@ function EditTrackForm({ track, isOpen, handleClose }: IEditTrackForm) {
           />
 
           <Button
-            type='submit'
+            type="submit"
             disabled={isLoading}
-            data-testid='submit-button'
-            className='active:scale-95'
+            data-testid="submit-button"
+            className="active:scale-95"
           >
             {isLoading ? 'Saving...' : 'Update'}
           </Button>

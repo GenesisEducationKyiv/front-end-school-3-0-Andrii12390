@@ -28,7 +28,7 @@ function TrackList() {
   };
 
   useEffect(() => {
-    dispatch(fetchTracks()).then((result) => {
+    dispatch(fetchTracks()).then(result => {
       if (fetchTracks.rejected.match(result)) {
         const err = result.payload ?? {
           message: 'Failed to fetch tracks',
@@ -51,8 +51,8 @@ function TrackList() {
   };
 
   return (
-    <section className='flex-1 pt-4 pb-30 bg-tracks-background'>
-      <div className='container mx-auto'>
+    <section className="flex-1 pt-4 pb-30 bg-tracks-background">
+      <div className="container mx-auto">
         {isEditModalOpen && (
           <EditTrackForm
             track={trackToEdit!}
@@ -63,8 +63,8 @@ function TrackList() {
         {isLoading ? (
           <TrackListSkeleton />
         ) : (
-          <ul className='px-2'>
-            {tracks.map((track) => (
+          <ul className="px-2">
+            {tracks.map(track => (
               <TrackItem
                 key={track.id}
                 track={track}

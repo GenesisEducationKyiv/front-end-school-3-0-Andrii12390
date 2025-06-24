@@ -9,15 +9,8 @@ export const TrackFormSchema = z.object({
     .string()
     .min(1, 'Artist is required')
     .max(50, "Artist's name cannot be longer than 50 characters"),
-  album: z
-    .string()
-    .max(50, 'Album name cannot be longer than 50 characters')
-    .optional(),
-  coverImage: z
-    .string()
-    .url('Must be a valid URL')
-    .optional()
-    .or(z.literal('')),
+  album: z.string().max(50, 'Album name cannot be longer than 50 characters').optional(),
+  coverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   genres: z.array(z.string()).min(1, 'Select at least one genre'),
 });
 
@@ -49,22 +42,17 @@ export const TrackListResponseSchema = z.object({
 
 export const FiltersQuerySchema = z.object({
   search: z.string().optional().default(''),
-  sort: z
-    .enum(['title', 'artist', 'album', 'createdAt'])
-    .nullable()
-    .default(null),
+  sort: z.enum(['title', 'artist', 'album', 'createdAt']).nullable().default(null),
   order: z.enum(['asc', 'desc']).nullable().default(null),
   genre: z.string().nullable().default(null),
   artist: z.string().nullable().default(null),
   page: z.preprocess(
-    (val) =>
-      typeof val === 'string' && !isNaN(+val) ? parseInt(val, 10) : undefined,
-    z.number().int().min(1).default(1)
+    val => (typeof val === 'string' && !isNaN(+val) ? parseInt(val, 10) : undefined),
+    z.number().int().min(1).default(1),
   ),
   limit: z.preprocess(
-    (val) =>
-      typeof val === 'string' && !isNaN(+val) ? parseInt(val, 10) : undefined,
-    z.number().int().min(1).default(10)
+    val => (typeof val === 'string' && !isNaN(+val) ? parseInt(val, 10) : undefined),
+    z.number().int().min(1).default(10),
   ),
 });
 
