@@ -1,22 +1,25 @@
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
+  useFiltersStore,
+  initialFilters,
   FiltersState,
-  initialState as initialFilters,
-  resetFilters,
-  selectFilters,
-  setFilters,
-  type TField,
-  type TOrder,
-} from '@/features/filters/filtersSlice';
+  TOrder,
+  TField,
+} from '@/store/useFiltersStore';
+
 import { buildQueryParams, parseQueryParams } from '@/lib/helpers';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from './useDebounce';
 import { O, pipe, type Option } from '@mobily/ts-belt';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useFilters = () => {
-  const dispatch = useAppDispatch();
-  const storedFilters = useAppSelector(selectFilters);
+  const queryClient = useQueryClient();
+
+  const storedFilters = useFiltersStore(state => state.filters);
+  const resetFilters = useFiltersStore(state => state.resetFilters);
+  const setFilters = useFiltersStore(state => state.setFilters);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [localFilters, setLocalFilters] = useState<FiltersState>(storedFilters);
   const debouncedSearch = useDebounce(localFilters.search, 500);
@@ -32,7 +35,7 @@ export const useFilters = () => {
         O.getWithDefault(storedFilters),
       );
 
-      dispatch(setFilters(merged));
+      setFilters(merged);
       setLocalFilters(merged);
 
       isInitialized.current = true;
@@ -51,13 +54,15 @@ export const useFilters = () => {
         page: 1,
       };
 
-      dispatch(setFilters(newFilters));
+      setFilters(newFilters);
 
       setSearchParams(buildQueryParams(newFilters));
     }
 
+    queryClient.invalidateQueries({ queryKey: ['tracks'] });
+
     prevDebouncedSearch.current = debouncedSearch;
-  }, [debouncedSearch, dispatch, setSearchParams, storedFilters]);
+  }, [debouncedSearch, setSearchParams, storedFilters, setFilters, queryClient]);
 
   useEffect(() => {
     setLocalFilters(storedFilters);
@@ -72,14 +77,14 @@ export const useFilters = () => {
     setLocalFilters(newFilters);
 
     if (key === 'page') {
-      dispatch(setFilters(newFilters));
+      setFilters(newFilters);
       setSearchParams(buildQueryParams(newFilters));
     }
   };
 
   const applyFilters = () => {
     pipe(localFilters, filters => {
-      dispatch(setFilters(filters));
+      setFilters(filters);
       setSearchParams(buildQueryParams(filters));
     });
   };
@@ -87,7 +92,7 @@ export const useFilters = () => {
   const resetLocalFilters = () => {
     pipe({ ...initialFilters, page: 1 }, filters => {
       setLocalFilters(filters);
-      dispatch(resetFilters());
+      resetFilters();
       setSearchParams({});
     });
   };

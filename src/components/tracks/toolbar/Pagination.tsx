@@ -5,7 +5,7 @@ import { usePagination } from '@/hooks/usePagination';
 function Pagination() {
   const { isLoading, page, handleNext, handlePrev, totalPages } = usePagination();
 
-  if (totalPages <= 1) return null;
+  if (isLoading || totalPages <= 1) return null;
 
   return (
     <nav

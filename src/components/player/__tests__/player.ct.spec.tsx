@@ -1,14 +1,13 @@
 import '@testing-library/jest-dom';
-
 import { describe, it, beforeEach, vi, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import AudioPlayer from '..';
-import { useAudioPlayer, IAudioState } from '@/hooks/useAudioPlayer';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { TTrack } from '@/lib/schemas';
+import { PlayerState } from '@/store/usePlayerStore';
 
 vi.mock('@/hooks/useAudioPlayer');
-
 const mockedUseAudioPlayer = vi.mocked(useAudioPlayer);
 
 const baseTrack: TTrack = {
@@ -22,16 +21,16 @@ const baseTrack: TTrack = {
 
 const mockTogglePlay = vi.fn();
 const mockHandleSeek = vi.fn();
-const mockOnEnded = vi.fn();
 
-const defaultState: IAudioState = {
+const defaultState: Omit<PlayerState, ''> = {
+  activeTrack: null,
   isPlaying: false,
   progress: 0,
   currentTime: 0,
   duration: 0,
 };
 
-function setup(partial: Partial<IAudioState> = {}) {
+function setup(partial: Partial<PlayerState> = {}) {
   const state = { ...defaultState, ...partial };
 
   mockedUseAudioPlayer.mockReturnValue({
@@ -43,43 +42,54 @@ function setup(partial: Partial<IAudioState> = {}) {
     duration: state.duration,
     togglePlay: mockTogglePlay,
     handleSeek: mockHandleSeek,
-    onEnded: mockOnEnded,
+    handleEnded: () => {},
+    onLoadedMetadata: () => {},
+    onTimeUpdate: () => {},
   });
 
   render(<AudioPlayer track={baseTrack} />);
 }
 
-describe('AudioPlayer tests', () => {
+describe('AudioPlayer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('Shows play button', () => {
-    setup({ progress: 25, currentTime: 12, duration: 48 });
+  it('renders Play button when not playing', () => {
+    setup();
     expect(screen.getByTestId('play-button-id')).toBeInTheDocument();
   });
 
-  it('Shows correct progress', () => {
-    setup({ progress: 25, currentTime: 12, duration: 48 });
-    expect(screen.getByTestId('audio-progress-id').firstElementChild).toHaveStyle({ width: '25%' });
+  it('renders Pause button when playing', () => {
+    setup({ isPlaying: true });
+    expect(screen.getByTestId('pause-button-id')).toBeInTheDocument();
   });
 
-  it('Shows correct current time', () => {
-    setup({ progress: 25, currentTime: 12, duration: 48 });
+  it('displays correct progress width', () => {
+    setup({ progress: 25 });
+    const bar = screen.getByTestId('audio-progress-id').firstElementChild as HTMLElement;
+    expect(bar).toHaveStyle({ width: '25%' });
+  });
+
+  it('displays formatted current time', () => {
+    setup({ currentTime: 12 });
     expect(screen.getByText('0:12')).toBeInTheDocument();
   });
 
-  it('Shows correct duration', () => {
-    setup({ progress: 25, currentTime: 12, duration: 48 });
+  it('displays formatted duration', () => {
+    setup({ duration: 48 });
     expect(screen.getByText('0:48')).toBeInTheDocument();
   });
 
-  it('Call togglePlay by clicking pause button', () => {
+  it('calls togglePlay when Play button clicked', () => {
+    setup();
+    fireEvent.click(screen.getByTestId('play-button-id'));
+    expect(mockTogglePlay).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls togglePlay when Pause button clicked', () => {
     setup({ isPlaying: true });
-
-    const pauseBtn = screen.getByTestId('pause-button-id');
-    fireEvent.click(pauseBtn);
-
+    fireEvent.click(screen.getByTestId('pause-button-id'));
     expect(mockTogglePlay).toHaveBeenCalledTimes(1);
   });
 });

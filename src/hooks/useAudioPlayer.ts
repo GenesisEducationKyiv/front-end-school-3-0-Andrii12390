@@ -1,100 +1,91 @@
-import { useEffect, useRef, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { playNextTrack, selectTracks, togglePlayPause } from '@/features/tracks/tracksSlice';
-import { type TTrack } from '@/lib/schemas';
-import { type Option } from '@mobily/ts-belt';
-
-export interface IAudioState {
-  isPlaying: boolean;
-  progress: number;
-  currentTime: number;
-  duration: number;
-}
-
-const initialState: IAudioState = {
-  isPlaying: false,
-  progress: 0,
-  currentTime: 0,
-  duration: 0,
-};
+import { useEffect, useRef } from 'react';
+import { usePlayerStore } from '@/store/usePlayerStore';
+import { API_URL } from '@/lib/config';
+import type { TTrack } from '@/lib/schemas';
+import { Option } from '@mobily/ts-belt';
+import { useTrackStore } from '@/store/useTracksStore';
 
 export const useAudioPlayer = (track: Option<TTrack>) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const [audioState, setAudioState] = useState<IAudioState>(initialState);
 
-  const dispatch = useAppDispatch();
-  const { isPlaying: reduxIsPlaying } = useAppSelector(selectTracks);
+  const tracks = useTrackStore(state => state.tracks);
+
+  const {
+    isPlaying,
+    togglePlay,
+    setTime,
+    setDuration,
+    setProgress,
+    setTrack,
+    currentTime,
+    duration,
+    progress,
+  } = usePlayerStore();
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (track && audio) {
+      audio.src = `${API_URL}/api/files/${track.audioFile}`;
+      audio.load();
+      setTrack(track);
+    }
+  }, [track, setTrack]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    if (isPlaying) audio.play().catch(() => {});
+    else audio.pause();
+  }, [isPlaying]);
 
-    const handleTimeUpdate = () => {
-      setAudioState(prev => ({
-        ...prev,
-        currentTime: audio.currentTime,
-        duration: audio.duration,
-        progress: (audio.currentTime / audio.duration) * 100,
-      }));
-    };
+  const onLoadedMetadata = () => {
+    const audio = audioRef.current!;
+    setDuration(audio.duration);
+    setProgress((audio.currentTime / audio.duration) * 100);
+  };
 
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    return () => audio.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [track]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    if (track?.audioFile && audio) {
-      audio.load();
-      setAudioState(prev => ({ ...prev, isPlaying: reduxIsPlaying }));
-    } else {
-      setAudioState(initialState);
+  const onTimeUpdate = () => {
+    const audio = audioRef.current!;
+    setTime(audio.currentTime);
+    if (audio.duration > 0) {
+      setProgress((audio.currentTime / audio.duration) * 100);
     }
-  }, [track, reduxIsPlaying]);
+  };
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !track?.audioFile) return;
+  const handleEnded = () => {
+    if (!track) return;
 
-    const handlePlayPause = async () => {
-      if (reduxIsPlaying && audio.paused) {
-        await audio.play();
-      } else if (!reduxIsPlaying && !audio.paused) {
-        audio.pause();
-      }
-      setAudioState(prev => ({ ...prev, isPlaying: reduxIsPlaying }));
-    };
+    const idx = tracks.findIndex(t => t.id === track.id);
 
-    handlePlayPause();
-  }, [reduxIsPlaying, track]);
+    const next = tracks.slice(idx + 1).find(t => !!t.audioFile);
 
-  const togglePlay = () => {
-    dispatch(togglePlayPause());
+    if (next) {
+      setTrack(next);
+    }
+
+    togglePlay();
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const audio = audioRef.current;
-    const bar = progressRef.current;
-    if (!audio || !bar) return;
-
-    const rect = bar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const newTime = (clickX / rect.width) * audio.duration;
-
-    audio.currentTime = newTime;
+    const audio = audioRef.current!;
+    const bar = progressRef.current!;
+    const { left, width } = bar.getBoundingClientRect();
+    const clickX = e.clientX - left;
+    audio.currentTime = (clickX / width) * audio.duration;
   };
 
   return {
     audioRef,
     progressRef,
-    isPlaying: audioState.isPlaying,
+    isPlaying,
     togglePlay,
-    progress: audioState.progress,
-    currentTime: audioState.currentTime,
-    duration: audioState.duration,
+    currentTime,
+    duration,
+    progress,
     handleSeek,
-    onEnded: () => dispatch(playNextTrack()),
+    handleEnded,
+    onLoadedMetadata,
+    onTimeUpdate,
   };
 };

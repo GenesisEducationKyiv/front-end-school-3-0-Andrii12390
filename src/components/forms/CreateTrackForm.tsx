@@ -3,15 +3,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import FormDialog from '../common/FormDialog';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { createTrack } from '@/features/tracks/trackThunks';
 import { Button } from '@/components/ui/button';
 import { TrackFormSchema, type TTrackForm } from '@/lib/schemas';
 import TextInputField from '../common/TextInput';
 import GenreSelector from './GenreSelector';
-import { customToast } from '../ui/toasts';
-import { selectGenres } from '@/features/genres/genresSlice';
-import { selectTracks } from '@/features/tracks/tracksSlice';
+import { useCreateTrack } from '@/api/tracks/hooks';
+import { useGenres } from '@/api/genres/hooks';
 
 interface ICreateTrackFormProps {
   isOpen: boolean;
@@ -19,9 +16,8 @@ interface ICreateTrackFormProps {
 }
 
 function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
-  const dispatch = useAppDispatch();
-  const { genres } = useAppSelector(selectGenres);
-  const { isLoading } = useAppSelector(selectTracks);
+  const { mutate, isPending } = useCreateTrack();
+  const { data: genres = [] } = useGenres();
 
   const form = useForm<TTrackForm>({
     resolver: zodResolver(TrackFormSchema),
@@ -35,14 +31,7 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
   });
 
   const onSubmit = (values: TTrackForm) => {
-    dispatch(createTrack(values)).then(result => {
-      if (createTrack.fulfilled.match(result)) {
-        customToast.success('Track created successfully');
-      } else {
-        const error = result.payload ?? { message: 'Unknown error' };
-        customToast.error(error.message);
-      }
-    });
+    mutate(values);
   };
 
   return (
@@ -96,11 +85,11 @@ function CreateTrackForm({ isOpen, handleClose }: ICreateTrackFormProps) {
 
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             data-testid="submit-button"
             className="active:scale-95"
           >
-            {isLoading ? 'Saving...' : 'Create'}
+            {isPending ? 'Saving...' : 'Create'}
           </Button>
         </form>
       </Form>

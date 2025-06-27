@@ -5,13 +5,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical, Pause, Play } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { selectTracks } from '@/features/tracks/tracksSlice';
 import { useState } from 'react';
 import TrackFileDialog from './TrackFileDialog';
 import { type TTrack } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { usePlayerStore } from '@/store/usePlayerStore';
 
 interface ITrackActionsProps {
   isChecked: boolean;
@@ -34,7 +33,9 @@ function TrackActions({
   onDeleteTrack,
   handleSelect,
 }: ITrackActionsProps) {
-  const { activeTrack, isPlaying } = useSelector(selectTracks);
+  const activeTrack = usePlayerStore(state => state.activeTrack);
+  const isPlaying = usePlayerStore(state => state.isPlaying);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
