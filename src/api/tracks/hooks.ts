@@ -10,7 +10,7 @@ import {
 } from '.';
 import { type TTrack } from '@/lib/schemas';
 import { type ApiError } from '@/types';
-import { toast } from 'sonner';
+import { customToast } from '@/components/ui/toasts';
 
 export const useTracks = () => {
   return useQuery({
@@ -26,10 +26,10 @@ export const useCreateTrack = () => {
     mutationFn: data => createTrack(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracks'] });
-      toast.success('Track successfully created!');
+      customToast.success('Track successfully created!');
     },
     onError: error => {
-      toast.error(error.message || 'Failed to create track');
+      customToast.error(error.message || 'Failed to create track');
     },
   });
 };
@@ -41,10 +41,10 @@ export const useDeleteTrack = () => {
     mutationFn: id => deleteTrack(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracks'] });
-      toast.success('Track successfully deleted!');
+      customToast.success('Track successfully deleted!');
     },
     onError: error => {
-      toast.error(error.message || 'Failed to delete track');
+      customToast.error(error.message || 'Failed to delete track');
     },
   });
 };
@@ -56,10 +56,10 @@ export const useEditTrack = () => {
     mutationFn: data => editTrack(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracks'] });
-      toast.success('Track successfully updated!');
+      customToast.success('Track successfully updated!');
     },
     onError: error => {
-      toast.error(error.message || 'Failed to update track');
+      customToast.error(error.message || 'Failed to update track');
     },
   });
 };
@@ -71,10 +71,10 @@ export const useUploadTrackFile = () => {
     mutationFn: ({ id, file }) => uploadTrackFile(id, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracks'] });
-      toast.success('File successfully uploaded!');
+      customToast.success('File successfully uploaded!');
     },
     onError: error => {
-      toast.error(error.message || 'Failed to upload file');
+      customToast.error(error.message || 'Failed to upload file');
     },
   });
 };
@@ -86,10 +86,10 @@ export const useDeleteTrackFile = () => {
     mutationFn: id => deleteTrackFile(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracks'] });
-      toast.success('File successfully deleted!');
+      customToast.success('File successfully deleted!');
     },
     onError: error => {
-      toast.error(error.message || 'Failed to delete file');
+      customToast.error(error.message || 'Failed to delete file');
     },
   });
 };
@@ -101,10 +101,10 @@ export const useDeleteTracks = () => {
     mutationFn: ids => deleteTracks(ids),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracks'] });
-      toast.success('Tracks successfully deleted!');
+      customToast.success('Tracks successfully deleted!');
     },
     onError: error => {
-      toast.error(error.message || 'Failed to delete tracks');
+      customToast.error(error.message || 'Failed to delete tracks');
     },
   });
 };
