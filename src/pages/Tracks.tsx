@@ -1,5 +1,6 @@
 import { useTracks } from '@/api/tracks/hooks';
 import AudioPlayer from '@/components/player';
+import { ActiveTrack } from '@/components/tracks';
 import TrackList from '@/components/tracks/list/TracksList';
 import TrackToolbar from '@/components/tracks/toolbar/Toolbar';
 import { Logo } from '@/components/ui/logo';
@@ -25,11 +26,11 @@ function Tracks() {
           <div className="container mx-auto px-2">
             <header
               data-testid="tracks-header"
-              className="animate-fade-right"
+              className="animate-fade-right flex items-center justify-between mb-6"
             >
               <Logo />
+              <ActiveTrack />
             </header>
-
             <TrackToolbar
               tracks={tracks?.data}
               isLoading={isLoading}
