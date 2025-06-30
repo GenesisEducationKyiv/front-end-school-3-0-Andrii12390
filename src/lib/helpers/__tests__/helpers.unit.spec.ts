@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildQueryParams, parseQueryParams, validateAudioFile, formatTime } from '..';
-import { FiltersState } from '@/features/filters/filtersSlice';
+import { type FiltersState } from '@/store/useFiltersStore';
 
 describe('helper functions (black-box)', () => {
   describe('buildQueryParams', () => {

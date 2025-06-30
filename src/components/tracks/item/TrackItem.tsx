@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 
 import { twMerge } from 'tailwind-merge';
 import { API_URL } from '@/lib/config';
@@ -7,11 +7,12 @@ import { type TTrack } from '@/lib/schemas';
 import { customToast } from '@/components/ui/toasts';
 import TrackActions from './TrackActions';
 import TrackInfo from './TrackInfo';
-import TrackDeleteDialog from './TrackDeleteDialog';
 import { type Option } from '@mobily/ts-belt';
 import { useDeleteTrack, useDeleteTrackFile, useUploadTrackFile } from '@/api/tracks/hooks';
 import { usePlayerStore } from '@/store/usePlayerStore';
 import { useTrackStore } from '@/store/useTracksStore';
+
+const TrackDeleteDialog = lazy(() => import('./TrackDeleteDialog'));
 
 interface ITrackItemProps {
   track: TTrack;
@@ -64,7 +65,8 @@ function TrackItem({ track, isChecked, handleEdit }: ITrackItemProps) {
   const validateAndUploadFile = (file: File) => {
     const errorMessage = validateAudioFile(file);
     if (errorMessage) {
-      return customToast.error(errorMessage);
+      customToast.error(errorMessage);
+      return;
     }
 
     uploadTrackFile({ id: track.id, file }).then(data => {
@@ -74,7 +76,8 @@ function TrackItem({ track, isChecked, handleEdit }: ITrackItemProps) {
 
   const handlePlay = () => {
     if (!track.audioFile) {
-      return customToast.error('No file uploaded!');
+      customToast.error('No file uploaded!');
+      return;
     }
 
     if (activeTrack?.id !== track.id) {
@@ -122,14 +125,16 @@ function TrackItem({ track, isChecked, handleEdit }: ITrackItemProps) {
         </section>
       </li>
 
-      <TrackDeleteDialog
-        isFileDeleteOpen={isFileDeleteOpen}
-        isTrackDeleteOpen={isTrackDeleteOpen}
-        setIsFileDeleteOpen={setIsFileDeleteOpen}
-        setIsTrackDeleteOpen={setIsTrackDeleteOpen}
-        onDeleteFile={handleRemoveFile}
-        onDeleteTrack={handleRemoveTrack}
-      />
+      <Suspense fallback={null}>
+        <TrackDeleteDialog
+          isFileDeleteOpen={isFileDeleteOpen}
+          isTrackDeleteOpen={isTrackDeleteOpen}
+          setIsFileDeleteOpen={setIsFileDeleteOpen}
+          setIsTrackDeleteOpen={setIsTrackDeleteOpen}
+          onDeleteFile={handleRemoveFile}
+          onDeleteTrack={handleRemoveTrack}
+        />
+      </Suspense>
     </>
   );
 }

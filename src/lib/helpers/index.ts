@@ -1,4 +1,4 @@
-import { type FiltersState } from '@/features/filters/filtersSlice';
+import { type FiltersState } from '@/store/useFiltersStore';
 import { FiltersQuerySchema } from '../schemas';
 import { pipe, D, O } from '@mobily/ts-belt';
 
