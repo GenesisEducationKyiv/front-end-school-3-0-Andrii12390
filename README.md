@@ -68,7 +68,7 @@ After
 
 | Files    | Size       |
 | -------- | ---------- |
-| index.js | **600 KB** |
+| index.js | **597 KB** |
 
 bundle still quite large, but for SPA it's ok
 
@@ -80,6 +80,7 @@ bundle still quite large, but for SPA it's ok
 | **TrackDeleteDialog** | `lazy(() => import('./TrackDeleteDialog'))`                | `components/tracks/item/TrackItem.tsx`    |
 | **EditTrackForm**     | `lazy(() => import('@/components/forms/EditTrackForm'))`   | `components/tracks/list/TracksList.tsx`   |
 | **CreateTrackForm**   | `lazy(() => import('@/components/forms/CreateTrackForm'))` | `components/tracks/toolbar/Toolbar.tsx.`  |
+| **AudioPlayer**       | `lazy(() => import('@/components/player'))`                | `pages/Tracks.tsx.`                       |
 
 Chunks appear on‑demand, reducing initial load.
 
