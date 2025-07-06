@@ -40,6 +40,7 @@ export const useFilters = () => {
 
       isInitialized.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
