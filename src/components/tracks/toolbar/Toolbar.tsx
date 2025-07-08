@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/button';
 
 import { Eraser, ListCheck, Plus, Trash } from 'lucide-react';
 import { useFilters } from '@/hooks/useFilters';
-import { Filters, Pagination } from '..';
+import { Pagination } from '..';
 
 import { useTrackStore } from '@/store/useTracksStore';
 import { useDeleteTracks } from '@/api/tracks/hooks';
 import { type TTrack } from '@/lib/schemas';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const CreateTrackForm = lazy(() => import('@/components/forms/CreateTrackForm'));
+const Filters = lazy(() => import('@/components/tracks/toolbar/Filters'));
 
 interface IToolbarProps {
   tracks?: TTrack[];
@@ -57,13 +59,16 @@ function Toolbar({ tracks, isLoading }: IToolbarProps) {
             placeholder="Search by title, artist, album"
             value={filters.search}
             onChange={handleSearchChange}
-            className="w-full md:w-64 bg-input-background"
+            className="w-full md:w-64 bg-input-background truncate"
             type="search"
           />
-          <Filters
-            isOpen={isSheetOpen}
-            setIsOpen={setIsSheetOpen}
-          />
+
+          <Suspense fallback={<Skeleton className="w-22 h-9 rounded" />}>
+            <Filters
+              isOpen={isSheetOpen}
+              setIsOpen={setIsSheetOpen}
+            />
+          </Suspense>
         </div>
 
         <Button
