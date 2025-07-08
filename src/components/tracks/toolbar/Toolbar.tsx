@@ -62,13 +62,14 @@ function Toolbar({ tracks, isLoading }: IToolbarProps) {
             className="w-full md:w-64 bg-input-background truncate"
             type="search"
           />
-
-          <Suspense fallback={<Skeleton className="w-22 h-9 rounded" />}>
-            <Filters
-              isOpen={isSheetOpen}
-              setIsOpen={setIsSheetOpen}
-            />
-          </Suspense>
+          {!isLoading && (
+            <Suspense fallback={<Skeleton className="w-25 h-9 mr-3 rounded" />}>
+              <Filters
+                isOpen={isSheetOpen}
+                setIsOpen={setIsSheetOpen}
+              />
+            </Suspense>
+          )}
         </div>
 
         <Button
@@ -80,12 +81,14 @@ function Toolbar({ tracks, isLoading }: IToolbarProps) {
           <Plus /> <span>New Track</span>
         </Button>
 
-        <Suspense fallback={null}>
-          <CreateTrackForm
-            isOpen={isCreateModalOpen}
-            handleClose={handleCloseModal}
-          />
-        </Suspense>
+        {isCreateModalOpen && (
+          <Suspense fallback={null}>
+            <CreateTrackForm
+              isOpen={isCreateModalOpen}
+              handleClose={handleCloseModal}
+            />
+          </Suspense>
+        )}
       </div>
 
       <div className="flex gap-4 justify-end mt-2">
