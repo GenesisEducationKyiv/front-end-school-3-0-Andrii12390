@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 import { Eraser, ListCheck, Plus, Trash } from 'lucide-react';
 import { useFilters } from '@/hooks/useFilters';
 import { Filters, Pagination } from '..';
-import { CreateTrackForm } from '@/components/forms';
+
 import { useTrackStore } from '@/store/useTracksStore';
 import { useDeleteTracks } from '@/api/tracks/hooks';
 import { type TTrack } from '@/lib/schemas';
+
+const CreateTrackForm = lazy(() => import('@/components/forms/CreateTrackForm'));
 
 interface IToolbarProps {
   tracks?: TTrack[];
@@ -73,10 +75,12 @@ function Toolbar({ tracks, isLoading }: IToolbarProps) {
           <Plus /> <span>New Track</span>
         </Button>
 
-        <CreateTrackForm
-          isOpen={isCreateModalOpen}
-          handleClose={handleCloseModal}
-        />
+        <Suspense fallback={null}>
+          <CreateTrackForm
+            isOpen={isCreateModalOpen}
+            handleClose={handleCloseModal}
+          />
+        </Suspense>
       </div>
 
       <div className="flex gap-4 justify-end mt-2">

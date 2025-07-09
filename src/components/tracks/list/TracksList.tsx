@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import TrackItem from '../item/TrackItem';
 import TrackListSkeleton from './TracksSkeleton';
 import { type TTrack } from '@/lib/schemas';
-import { EditTrackForm } from '@/components/forms';
 import { type Option } from '@mobily/ts-belt';
 import { useTrackStore } from '@/store/useTracksStore';
+
+const EditTrackForm = lazy(() => import('@/components/forms/EditTrackForm'));
 
 interface ITrackList {
   tracks?: TTrack[];
@@ -30,11 +31,13 @@ function TrackList({ tracks, isLoading }: ITrackList) {
     <section className="flex-1 pt-4 pb-30 bg-tracks-background">
       <div className="container mx-auto">
         {isEditModalOpen && (
-          <EditTrackForm
-            track={trackToEdit!}
-            isOpen={isEditModalOpen}
-            handleClose={handleCloseModal}
-          />
+          <Suspense fallback={null}>
+            <EditTrackForm
+              track={trackToEdit!}
+              isOpen={isEditModalOpen}
+              handleClose={handleCloseModal}
+            />
+          </Suspense>
         )}
         {isLoading ? (
           <TrackListSkeleton />
