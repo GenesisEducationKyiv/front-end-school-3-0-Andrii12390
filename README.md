@@ -62,25 +62,26 @@ before optimization
 
 | Files    | Size       |
 | -------- | ---------- |
-| index.js | **638 KB** |
+| index.js | **685 KB** |
 
 After
 
 | Files    | Size       |
 | -------- | ---------- |
-| index.js | **597 KB** |
+| index.js | **567 KB** |
 
 bundle still quite large, but for SPA it's ok
 
 ### 2. Code splitting & lazy loading
 
-| Component             | Method                                                     | Place                                     |
-| --------------------- | ---------------------------------------------------------- | ----------------------------------------- |
-| **TrackFileDialog**   | `lazy(() => import('./TrackFileDialog'))`                  | `components/tracks/item/TrackActions.tsx` |
-| **TrackDeleteDialog** | `lazy(() => import('./TrackDeleteDialog'))`                | `components/tracks/item/TrackItem.tsx`    |
-| **EditTrackForm**     | `lazy(() => import('@/components/forms/EditTrackForm'))`   | `components/tracks/list/TracksList.tsx`   |
-| **CreateTrackForm**   | `lazy(() => import('@/components/forms/CreateTrackForm'))` | `components/tracks/toolbar/Toolbar.tsx.`  |
-| **AudioPlayer**       | `lazy(() => import('@/components/player'))`                | `pages/Tracks.tsx.`                       |
+| Component             | Method                                                      | Place                                     |
+| --------------------- | ----------------------------------------------------------- | ----------------------------------------- |
+| **TrackFileDialog**   | `lazy(() => import('./TrackFileDialog'))`                   | `components/tracks/item/TrackActions.tsx` |
+| **TrackDeleteDialog** | `lazy(() => import('./TrackDeleteDialog'))`                 | `components/tracks/item/TrackItem.tsx`    |
+| **EditTrackForm**     | `lazy(() => import('@/components/forms/EditTrackForm'))`    | `components/tracks/list/TracksList.tsx`   |
+| **CreateTrackForm**   | `lazy(() => import('@/components/forms/CreateTrackForm'))`  | `components/tracks/toolbar/Toolbar.tsx.`  |
+| **AudioPlayer**       | `lazy(() => import('@/components/player'))`                 | `pages/Tracks.tsx.`                       |
+| **Filters**           | `lazy(() => import('@/components/tracks/toolbar/Filters'))` | `components/tracks/toolbar/Toolbar.tsx.`  |
 
 Chunks appear on‑demand, reducing initial load.
 

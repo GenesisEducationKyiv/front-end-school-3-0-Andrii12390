@@ -125,16 +125,18 @@ function TrackItem({ track, isChecked, handleEdit }: ITrackItemProps) {
         </section>
       </li>
 
-      <Suspense fallback={null}>
-        <TrackDeleteDialog
-          isFileDeleteOpen={isFileDeleteOpen}
-          isTrackDeleteOpen={isTrackDeleteOpen}
-          setIsFileDeleteOpen={setIsFileDeleteOpen}
-          setIsTrackDeleteOpen={setIsTrackDeleteOpen}
-          onDeleteFile={handleRemoveFile}
-          onDeleteTrack={handleRemoveTrack}
-        />
-      </Suspense>
+      {(isFileDeleteOpen || isTrackDeleteOpen) && (
+        <Suspense fallback={null}>
+          <TrackDeleteDialog
+            isFileDeleteOpen={isFileDeleteOpen}
+            isTrackDeleteOpen={isTrackDeleteOpen}
+            setIsFileDeleteOpen={setIsFileDeleteOpen}
+            setIsTrackDeleteOpen={setIsTrackDeleteOpen}
+            onDeleteFile={handleRemoveFile}
+            onDeleteTrack={handleRemoveTrack}
+          />
+        </Suspense>
+      )}
     </>
   );
 }

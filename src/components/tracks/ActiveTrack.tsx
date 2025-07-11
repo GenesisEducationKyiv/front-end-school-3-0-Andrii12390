@@ -6,7 +6,7 @@ function ActiveTrackDisplay() {
 
   if (error) {
     return (
-      <div className="flex items-center gap-2 text-destructive text-sm">
+      <div className="flex items-center gap-2 text-destructive text-xs">
         <WifiOff size={16} />
         <span>Connection error</span>
       </div>
@@ -15,7 +15,7 @@ function ActiveTrackDisplay() {
 
   if (!isConnected) {
     return (
-      <div className="flex items-center gap-2 text-yellow-500 text-sm">
+      <div className="flex items-center gap-2 text-yellow-500 text-xs">
         <Wifi size={16} />
         <span>Connecting...</span>
       </div>
@@ -24,7 +24,7 @@ function ActiveTrackDisplay() {
 
   if (!activeTrack) {
     return (
-      <div className="flex items-center gap-2 text-muted-foreground text-sm">
+      <div className="flex items-center gap-2 text-muted-foreground text-xs">
         <Music size={16} />
         <span>Expecting track...</span>
       </div>

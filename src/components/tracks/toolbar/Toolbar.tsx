@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/button';
 
 import { Eraser, ListCheck, Plus, Trash } from 'lucide-react';
 import { useFilters } from '@/hooks/useFilters';
-import { Filters, Pagination } from '..';
+import { Pagination } from '..';
 
 import { useTrackStore } from '@/store/useTracksStore';
 import { useDeleteTracks } from '@/api/tracks/hooks';
 import { type TTrack } from '@/lib/schemas';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const CreateTrackForm = lazy(() => import('@/components/forms/CreateTrackForm'));
+const Filters = lazy(() => import('@/components/tracks/toolbar/Filters'));
 
 interface IToolbarProps {
   tracks?: TTrack[];
@@ -57,13 +59,17 @@ function Toolbar({ tracks, isLoading }: IToolbarProps) {
             placeholder="Search by title, artist, album"
             value={filters.search}
             onChange={handleSearchChange}
-            className="w-full md:w-64 bg-input-background"
+            className="w-full md:w-64 bg-input-background truncate"
             type="search"
           />
-          <Filters
-            isOpen={isSheetOpen}
-            setIsOpen={setIsSheetOpen}
-          />
+          {!isLoading && (
+            <Suspense fallback={<Skeleton className="w-25 h-9 mr-3 rounded" />}>
+              <Filters
+                isOpen={isSheetOpen}
+                setIsOpen={setIsSheetOpen}
+              />
+            </Suspense>
+          )}
         </div>
 
         <Button
@@ -75,12 +81,14 @@ function Toolbar({ tracks, isLoading }: IToolbarProps) {
           <Plus /> <span>New Track</span>
         </Button>
 
-        <Suspense fallback={null}>
-          <CreateTrackForm
-            isOpen={isCreateModalOpen}
-            handleClose={handleCloseModal}
-          />
-        </Suspense>
+        {isCreateModalOpen && (
+          <Suspense fallback={null}>
+            <CreateTrackForm
+              isOpen={isCreateModalOpen}
+              handleClose={handleCloseModal}
+            />
+          </Suspense>
+        )}
       </div>
 
       <div className="flex gap-4 justify-end mt-2">

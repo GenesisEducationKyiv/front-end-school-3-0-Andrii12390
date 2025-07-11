@@ -84,15 +84,17 @@ function TrackActions({
         onClick={e => e.stopPropagation()}
       />
 
-      <Suspense fallback={null}>
-        <TrackFileDialog
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          track={track}
-          onFileUpload={onFileUpload}
-          onDeleteFile={onDeleteFile}
-        />
-      </Suspense>
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <TrackFileDialog
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            track={track}
+            onFileUpload={onFileUpload}
+            onDeleteFile={onDeleteFile}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
