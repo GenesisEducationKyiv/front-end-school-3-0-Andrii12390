@@ -28,7 +28,7 @@ function Tracks() {
           <div className="container mx-auto px-2">
             <header
               data-testid="tracks-header"
-              className="animate-fade-right flex items-center justify-between mb-6"
+              className="flex items-center justify-between mb-6"
             >
               <Logo />
               <ActiveTrack />
